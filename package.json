@@ -9,7 +9,8 @@
     "web": "expo start --web",
     "upload": "node github-upload.js",
     "upload-bash": "bash upload.sh",
-    "github": "bash upload.sh"
+    "github": "bash upload.sh",
+    "verify": "bash tools/guardian/verify_patch.sh"
   },
   "dependencies": {
     "@react-native-community/datetimepicker": "^8.4.4",

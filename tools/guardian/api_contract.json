@@ -1,0 +1,22 @@
+{
+  "/examdelete": "post",
+  "/teacher/homeworkget": "post",
+  "/student/homework": "post",
+  "/student/all": "post",
+  "/user/info": "post",
+  "/teacher/allteacher": "post",
+  "/student/classall": "post",
+  "/user/login": "post",
+  "/student/attendance": "post",
+  "/teacher/attendanceadd": "post",
+  "/teacher/dersler": "post",
+  "/teacher/homework": "post",
+  "/teacher/homeworkdelete": "post",
+  "/schedule/getteacher": "post",
+  "/teacher/attendance": "post",
+  "/auth/refresh": "post",
+  "/teacher/examget": "post",
+  "/teacher/exam/add": "post",
+  "/teacher/examdelete": "post",
+  "/classes/all": "post"
+}
