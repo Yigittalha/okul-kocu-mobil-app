@@ -5,32 +5,33 @@
 Light theme remains unchanged; Dark theme now uses a classic dark palette. Navy/yellow colors have been removed from dark mode.
 
 ### Theme Tokens
+
 All theme tokens are located in `src/constants/colors.js`. The application uses the following themes:
 
 - `light`: The default light theme (unchanged)
 - `darkClassic`: The new classic dark theme with the following tokens:
-  - `background`  = `#0B0F14`  (near-black)
-  - `surface`     = `#121417`
-  - `card`        = `#161A20`
-  - `border`      = `#232A33`
+  - `background` = `#0B0F14` (near-black)
+  - `surface` = `#121417`
+  - `card` = `#161A20`
+  - `border` = `#232A33`
   - `textPrimary` = `#E6E8EB`
   - `textSecondary`=`#AAB2BD`
-  - `muted`       = `#6B7280`
-  - `accent`      = `#4F9CF9`  (subtle blue)
-  - `success`     = `#22C55E`
-  - `warning`     = `#F59E0B`
-  - `danger`      = `#EF4444`
+  - `muted` = `#6B7280`
+  - `accent` = `#4F9CF9` (subtle blue)
+  - `success` = `#22C55E`
+  - `warning` = `#F59E0B`
+  - `danger` = `#EF4444`
 
 ### How to Use Tokens
 
 Components can access theme tokens using the `useTheme` hook:
 
 ```javascript
-import { useTheme } from '../state/theme';
+import { useTheme } from "../state/theme";
 
 function MyComponent() {
   const { theme, isDark } = useTheme();
-  
+
   return (
     <View style={{ backgroundColor: theme.background }}>
       <Text style={{ color: theme.text }}>Hello World</Text>
@@ -60,6 +61,7 @@ veya
 ```
 
 İlk çalıştırmada sizden GitHub bilgilerinizi isteyecektir:
+
 - GitHub kullanıcı adınız
 - GitHub email adresiniz
 - Repository URL'iniz (örn: https://github.com/username/repo.git)
@@ -91,4 +93,4 @@ node github-upload.js
 
 - `.github-config` ve `.github-config.json` dosyaları yerel bilgisayarınızda saklanır
 - Hiçbir hassas bilgi GitHub'a yüklenmez
-- `.gitignore` dosyasına bu config dosyalarını eklemeyi unutmayın 
+- `.gitignore` dosyasına bu config dosyalarını eklemeyi unutmayın

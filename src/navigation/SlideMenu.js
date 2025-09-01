@@ -26,12 +26,12 @@ export default function SlideMenu() {
   const { theme, isDark } = useTheme();
   const navigation = useNavigation();
   const { menuVisible, closeMenu } = useSlideMenu();
-  
+
   // Screen dimensions for responsive design
-  const { height } = Dimensions.get('window');
+  const { height } = Dimensions.get("window");
   const MAX_LIST_HEIGHT = Math.floor(height * 0.6); // 60% of screen
   const isSmallScreen = height < 700;
-  
+
   // Accordion state for expanded categories
   const [expandedCategories, setExpandedCategories] = useState(new Set());
 
@@ -51,9 +51,12 @@ export default function SlideMenu() {
 
   const handleNavigate = (screenName) => {
     closeMenu();
-    
+
     // Öğrenci bilgilerini geçirmek için özel durumlar
-    if (screenName === "StudentHomeworkList" || screenName === "StudentAbsences") {
+    if (
+      screenName === "StudentHomeworkList" ||
+      screenName === "StudentAbsences"
+    ) {
       // Bu sayfalar için öğrenci bilgilerini geçirmek gerekiyor
       // Şimdilik sadece navigate ediyoruz, öğrenci bilgileri sayfa içinde alınacak
       navigation.navigate(screenName);
@@ -63,7 +66,7 @@ export default function SlideMenu() {
   };
 
   const toggleCategory = (categoryKey) => {
-    setExpandedCategories(prev => {
+    setExpandedCategories((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(categoryKey)) {
         newSet.delete(categoryKey);
@@ -81,24 +84,24 @@ export default function SlideMenu() {
   const renderMenuItem = ({ item }) => (
     <TouchableOpacity
       style={[
-        styles.menuItem, 
-        { 
+        styles.menuItem,
+        {
           backgroundColor: theme.card,
           minHeight: 44,
           paddingVertical: isSmallScreen ? 8 : 12,
           paddingHorizontal: 14,
-        }
+        },
       ]}
       onPress={() => handleNavigate(item.screen)}
       activeOpacity={0.7}
     >
-      <Text 
+      <Text
         style={[
-          styles.menuLabel, 
-          { 
+          styles.menuLabel,
+          {
             color: theme.text,
             fontSize: isSmallScreen ? 14 : 16,
-          }
+          },
         ]}
         numberOfLines={1}
         ellipsizeMode="tail"
@@ -110,49 +113,49 @@ export default function SlideMenu() {
 
   const renderCategory = ({ item }) => {
     const isExpanded = expandedCategories.has(item.key);
-    
+
     return (
       <View style={styles.categoryContainer}>
         <TouchableOpacity
           style={[
             styles.categoryHeader,
-            { 
+            {
               backgroundColor: theme.card,
               minHeight: 44,
               paddingVertical: isSmallScreen ? 10 : 12,
               paddingHorizontal: 14,
-            }
+            },
           ]}
           onPress={() => toggleCategory(item.key)}
           activeOpacity={0.7}
         >
           <View style={styles.categoryTitleRow}>
             <Text style={styles.categoryIcon}>{item.icon}</Text>
-            <Text 
+            <Text
               style={[
-                styles.categoryTitle, 
-                { 
+                styles.categoryTitle,
+                {
                   color: theme.text,
                   fontSize: isSmallScreen ? 15 : 16,
-                }
+                },
               ]}
             >
               {item.title}
             </Text>
           </View>
-          <Text 
+          <Text
             style={[
-              styles.expandIcon, 
-              { 
+              styles.expandIcon,
+              {
                 color: theme.text,
-                transform: [{ rotate: isExpanded ? '180deg' : '0deg' }]
-              }
+                transform: [{ rotate: isExpanded ? "180deg" : "0deg" }],
+              },
             ]}
           >
             ▼
           </Text>
         </TouchableOpacity>
-        
+
         {isExpanded && (
           <View style={styles.subItemsContainer}>
             {item.items.map((subItem) => (
@@ -160,23 +163,23 @@ export default function SlideMenu() {
                 key={subItem.key}
                 style={[
                   styles.subMenuItem,
-                  { 
+                  {
                     backgroundColor: theme.card,
                     minHeight: 44,
                     paddingVertical: isSmallScreen ? 8 : 10,
                     paddingHorizontal: 20,
-                  }
+                  },
                 ]}
                 onPress={() => handleNavigate(subItem.route)}
                 activeOpacity={0.7}
               >
-                <Text 
+                <Text
                   style={[
-                    styles.subMenuLabel, 
-                    { 
+                    styles.subMenuLabel,
+                    {
                       color: theme.text,
                       fontSize: isSmallScreen ? 13 : 14,
-                    }
+                    },
                   ]}
                   numberOfLines={1}
                   ellipsizeMode="tail"
@@ -242,10 +245,12 @@ export default function SlideMenu() {
               <View
                 style={[styles.schoolBadge, { backgroundColor: theme.accent }]}
               >
-                <Text style={[
-                  styles.schoolText, 
-                  { color: isDark ? theme.background : theme.primary }
-                ]}>
+                <Text
+                  style={[
+                    styles.schoolText,
+                    { color: isDark ? theme.background : theme.primary },
+                  ]}
+                >
                   🏫 {schoolCode}
                 </Text>
               </View>
@@ -257,7 +262,7 @@ export default function SlideMenu() {
             keyExtractor={(item) => item.key}
             renderItem={renderCategory}
             style={{ maxHeight: MAX_LIST_HEIGHT }}
-            contentContainerStyle={{ 
+            contentContainerStyle={{
               paddingVertical: 8,
               paddingBottom: 16,
             }}
@@ -268,17 +273,19 @@ export default function SlideMenu() {
           <View style={styles.divider} />
 
           <View style={styles.logoutContainer}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[
                 styles.logoutButton,
-                { borderColor: isDark ? theme.danger : "#ff6b6b" }
-              ]} 
+                { borderColor: isDark ? theme.danger : "#ff6b6b" },
+              ]}
               onPress={handleLogout}
             >
-              <Text style={[
-                styles.logoutText,
-                { color: isDark ? theme.danger : "#ff6b6b" }
-              ]}>
+              <Text
+                style={[
+                  styles.logoutText,
+                  { color: isDark ? theme.danger : "#ff6b6b" },
+                ]}
+              >
                 🚪 Çıkış Yap
               </Text>
             </TouchableOpacity>
@@ -383,15 +390,15 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   categoryHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     borderRadius: 12,
     marginVertical: 1,
   },
   categoryTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
   },
   categoryIcon: {
@@ -400,11 +407,11 @@ const styles = StyleSheet.create({
   },
   categoryTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   expandIcon: {
     fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   subItemsContainer: {
     marginLeft: 8,
@@ -417,11 +424,11 @@ const styles = StyleSheet.create({
   },
   subMenuLabel: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   divider: {
     height: 1,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: "#e0e0e0",
     marginVertical: 8,
     marginHorizontal: 10,
   },
@@ -452,7 +459,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingBottom: 30,
     paddingTop: 10,
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
   },
   spacer: {
     height: 20, // Add some space between menu items and the logout button

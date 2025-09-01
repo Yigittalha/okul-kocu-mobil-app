@@ -47,7 +47,7 @@ const AdminDashboard = () => {
       }
     } catch (error) {
       setError("Sistem hatası oluştu. Lütfen tekrar giriş yapın.");
-      
+
       // Oturumu sonlandır
       setTimeout(() => {
         clearSession();
@@ -126,9 +126,7 @@ const AdminDashboard = () => {
       <View
         style={[styles.loadingContainer, { backgroundColor: theme.background }]}
       >
-        <Text style={[styles.errorText, { color: theme.danger }]}>
-          {error}
-        </Text>
+        <Text style={[styles.errorText, { color: theme.danger }]}>{error}</Text>
       </View>
     );
   }
@@ -205,7 +203,12 @@ const AdminDashboard = () => {
             <View
               style={[styles.schoolBadge, { backgroundColor: theme.accent }]}
             >
-              <Text style={[styles.schoolText, { color: isDark ? theme.background : theme.primary }]}>
+              <Text
+                style={[
+                  styles.schoolText,
+                  { color: isDark ? theme.background : theme.primary },
+                ]}
+              >
                 🏫 {schoolCode}
               </Text>
             </View>

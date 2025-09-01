@@ -87,7 +87,12 @@ const StudentItem = ({ student, theme }) => {
 
           <View style={styles.infoContainer}>
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.textSecondary || theme.text }]}>
+              <Text
+                style={[
+                  styles.infoLabel,
+                  { color: theme.textSecondary || theme.text },
+                ]}
+              >
                 🆔 TC Kimlik:
               </Text>
               <Text style={[styles.infoValue, { color: theme.text }]}>
@@ -95,7 +100,12 @@ const StudentItem = ({ student, theme }) => {
               </Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.textSecondary || theme.text }]}>
+              <Text
+                style={[
+                  styles.infoLabel,
+                  { color: theme.textSecondary || theme.text },
+                ]}
+              >
                 👤 Cinsiyet:
               </Text>
               <Text style={[styles.infoValue, { color: theme.text }]}>
@@ -103,7 +113,12 @@ const StudentItem = ({ student, theme }) => {
               </Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.textSecondary || theme.text }]}>
+              <Text
+                style={[
+                  styles.infoLabel,
+                  { color: theme.textSecondary || theme.text },
+                ]}
+              >
                 🎂 Doğum Tarihi:
               </Text>
               <Text style={[styles.infoValue, { color: theme.text }]}>
@@ -111,7 +126,12 @@ const StudentItem = ({ student, theme }) => {
               </Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.textSecondary || theme.text }]}>
+              <Text
+                style={[
+                  styles.infoLabel,
+                  { color: theme.textSecondary || theme.text },
+                ]}
+              >
                 👩 Anne:
               </Text>
               <Text style={[styles.infoValue, { color: theme.text }]}>
@@ -119,7 +139,12 @@ const StudentItem = ({ student, theme }) => {
               </Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.textSecondary || theme.text }]}>
+              <Text
+                style={[
+                  styles.infoLabel,
+                  { color: theme.textSecondary || theme.text },
+                ]}
+              >
                 👨 Baba:
               </Text>
               <Text style={[styles.infoValue, { color: theme.text }]}>
@@ -127,7 +152,12 @@ const StudentItem = ({ student, theme }) => {
               </Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.textSecondary || theme.text }]}>
+              <Text
+                style={[
+                  styles.infoLabel,
+                  { color: theme.textSecondary || theme.text },
+                ]}
+              >
                 📞 Anne Tel:
               </Text>
               <Text style={[styles.infoValue, { color: theme.text }]}>
@@ -135,7 +165,12 @@ const StudentItem = ({ student, theme }) => {
               </Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.textSecondary || theme.text }]}>
+              <Text
+                style={[
+                  styles.infoLabel,
+                  { color: theme.textSecondary || theme.text },
+                ]}
+              >
                 📞 Baba Tel:
               </Text>
               <Text style={[styles.infoValue, { color: theme.text }]}>
@@ -156,7 +191,7 @@ const StudentsList = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const { openMenu } = useSlideMenu();
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
   const [filteredStudents, setFilteredStudents] = useState([]);
 
   const fetchStudents = useCallback(async () => {
@@ -249,15 +284,16 @@ const StudentsList = () => {
   // Arama metni değiştiğinde öğrencileri filtrele (API çağrısı yapmadan)
   const filterStudents = () => {
     if (!students.length) return; // Öğrenci yoksa işlem yapma
-    
-    if (searchText.trim() === '') {
+
+    if (searchText.trim() === "") {
       setFilteredStudents(students);
       return;
     }
 
-    const filtered = students.filter(student => 
-      student.AdSoyad && 
-      student.AdSoyad.toLowerCase().includes(searchText.toLowerCase())
+    const filtered = students.filter(
+      (student) =>
+        student.AdSoyad &&
+        student.AdSoyad.toLowerCase().includes(searchText.toLowerCase()),
     );
     setFilteredStudents(filtered);
   };
@@ -285,61 +321,83 @@ const StudentsList = () => {
       </View>
 
       <View style={styles.searchContainer}>
-        <View style={[
-          styles.searchInputWrapper, 
-          { 
-            backgroundColor: theme.card,
-            borderColor: theme.border 
-          }
-        ]}>
-          <Text style={[styles.searchIcon, { color: theme.textSecondary || theme.muted }]}>🔍</Text>
+        <View
+          style={[
+            styles.searchInputWrapper,
+            {
+              backgroundColor: theme.card,
+              borderColor: theme.border,
+            },
+          ]}
+        >
+          <Text
+            style={[
+              styles.searchIcon,
+              { color: theme.textSecondary || theme.muted },
+            ]}
+          >
+            🔍
+          </Text>
           <TextInput
             style={[
               styles.searchInput,
-              { 
+              {
                 color: theme.text,
-              }
+              },
             ]}
             placeholder="Aramak istediğiniz öğrencinin adını girin"
-            placeholderTextColor={theme.textSecondary || theme.muted || theme.text}
+            placeholderTextColor={
+              theme.textSecondary || theme.muted || theme.text
+            }
             value={searchText}
             onChangeText={setSearchText}
           />
           {searchText.length > 0 && (
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.clearButton}
-              onPress={() => setSearchText('')}
+              onPress={() => setSearchText("")}
             >
-              <Text style={{ color: theme.textSecondary || theme.muted }}>✕</Text>
+              <Text style={{ color: theme.textSecondary || theme.muted }}>
+                ✕
+              </Text>
             </TouchableOpacity>
           )}
         </View>
       </View>
 
       {loading ? (
-        <View style={[styles.loadingContainer, { backgroundColor: theme.background }]}>
+        <View
+          style={[
+            styles.loadingContainer,
+            { backgroundColor: theme.background },
+          ]}
+        >
           <ActivityIndicator size="large" color={theme.accent} />
           <Text style={[styles.loadingText, { color: theme.text }]}>
             Öğrenciler yükleniyor...
           </Text>
         </View>
       ) : (
-      <FlatList
+        <FlatList
           data={filteredStudents}
-        renderItem={({ item }) => <StudentItem student={item} theme={theme} />}
-        keyExtractor={(item) => item.OgrenciId.toString()}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-        refreshing={refreshing}
-        onRefresh={handleRefresh}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={[styles.emptyText, { color: theme.text }]}>
-                {searchText.trim() !== '' ? 'Arama kriterine uygun öğrenci bulunamadı.' : 'Öğrenci bulunamadı.'}
-            </Text>
-          </View>
-        }
-      />
+          renderItem={({ item }) => (
+            <StudentItem student={item} theme={theme} />
+          )}
+          keyExtractor={(item) => item.OgrenciId.toString()}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Text style={[styles.emptyText, { color: theme.text }]}>
+                {searchText.trim() !== ""
+                  ? "Arama kriterine uygun öğrenci bulunamadı."
+                  : "Öğrenci bulunamadı."}
+              </Text>
+            </View>
+          }
+        />
       )}
     </View>
   );
@@ -468,8 +526,8 @@ const styles = StyleSheet.create({
     paddingBottom: 15,
   },
   searchInputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderRadius: 12,
     paddingHorizontal: 15,
     paddingVertical: 10,

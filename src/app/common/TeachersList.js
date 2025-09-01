@@ -88,7 +88,12 @@ const TeacherItem = ({ teacher, theme }) => {
 
           <View style={styles.infoContainer}>
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.textSecondary || theme.text }]}>
+              <Text
+                style={[
+                  styles.infoLabel,
+                  { color: theme.textSecondary || theme.text },
+                ]}
+              >
                 📧 E-posta:
               </Text>
               <Text style={[styles.infoValue, { color: theme.text }]}>
@@ -96,7 +101,12 @@ const TeacherItem = ({ teacher, theme }) => {
               </Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.textSecondary || theme.text }]}>
+              <Text
+                style={[
+                  styles.infoLabel,
+                  { color: theme.textSecondary || theme.text },
+                ]}
+              >
                 📱 Telefon:
               </Text>
               <Text style={[styles.infoValue, { color: theme.text }]}>
@@ -104,7 +114,12 @@ const TeacherItem = ({ teacher, theme }) => {
               </Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.textSecondary || theme.text }]}>
+              <Text
+                style={[
+                  styles.infoLabel,
+                  { color: theme.textSecondary || theme.text },
+                ]}
+              >
                 🆔 TC Kimlik:
               </Text>
               <Text style={[styles.infoValue, { color: theme.text }]}>
@@ -112,7 +127,12 @@ const TeacherItem = ({ teacher, theme }) => {
               </Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.textSecondary || theme.text }]}>
+              <Text
+                style={[
+                  styles.infoLabel,
+                  { color: theme.textSecondary || theme.text },
+                ]}
+              >
                 👤 Cinsiyet:
               </Text>
               <Text style={[styles.infoValue, { color: theme.text }]}>
@@ -120,7 +140,12 @@ const TeacherItem = ({ teacher, theme }) => {
               </Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.textSecondary || theme.text }]}>
+              <Text
+                style={[
+                  styles.infoLabel,
+                  { color: theme.textSecondary || theme.text },
+                ]}
+              >
                 🎂 D. Tarihi:
               </Text>
               <Text style={[styles.infoValue, { color: theme.text }]}>
@@ -128,7 +153,12 @@ const TeacherItem = ({ teacher, theme }) => {
               </Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.textSecondary || theme.text }]}>
+              <Text
+                style={[
+                  styles.infoLabel,
+                  { color: theme.textSecondary || theme.text },
+                ]}
+              >
                 🆔 Öğrt. ID:
               </Text>
               <Text style={[styles.infoValue, { color: theme.text }]}>
@@ -154,7 +184,7 @@ const TeachersList = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const ITEMS_PER_PAGE = 20;
   const { openMenu } = useSlideMenu();
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
 
   const loadTeachers = useCallback(
     async (pageNumber = 1, shouldRefresh = false) => {
@@ -169,7 +199,7 @@ const TeachersList = () => {
 
         if (data && Array.isArray(data)) {
           let newTeachers = data;
-          
+
           if (shouldRefresh || pageNumber === 1) {
             setTeachers(newTeachers);
             setFilteredTeachers(newTeachers);
@@ -195,7 +225,7 @@ const TeachersList = () => {
         setLoadingMore(false);
       }
     },
-    [teachers, searchText]
+    [teachers, searchText],
   );
 
   const useMockData = (pageNumber, shouldRefresh) => {
@@ -260,14 +290,15 @@ const TeachersList = () => {
   const filterTeachersList = (teachersList, query) => {
     if (!teachersList || !teachersList.length) return;
 
-    if (query.trim() === '') {
+    if (query.trim() === "") {
       setFilteredTeachers(teachersList);
       return;
     }
 
-    const filtered = teachersList.filter(teacher => 
-      teacher.AdSoyad && 
-      teacher.AdSoyad.toLowerCase().includes(query.toLowerCase())
+    const filtered = teachersList.filter(
+      (teacher) =>
+        teacher.AdSoyad &&
+        teacher.AdSoyad.toLowerCase().includes(query.toLowerCase()),
     );
     setFilteredTeachers(filtered);
   };
@@ -302,7 +333,12 @@ const TeachersList = () => {
     return (
       <View style={styles.footerLoader}>
         <ActivityIndicator size="small" color={theme.accent} />
-        <Text style={[styles.footerText, { color: theme.textSecondary || theme.text }]}>
+        <Text
+          style={[
+            styles.footerText,
+            { color: theme.textSecondary || theme.text },
+          ]}
+        >
           Daha fazla yükleniyor...
         </Text>
       </View>
@@ -327,64 +363,86 @@ const TeachersList = () => {
       </View>
 
       <View style={styles.searchContainer}>
-        <View style={[
-          styles.searchInputWrapper, 
-          { 
-            backgroundColor: theme.card,
-            borderColor: theme.border 
-          }
-        ]}>
-          <Text style={[styles.searchIcon, { color: theme.textSecondary || theme.muted }]}>🔍</Text>
+        <View
+          style={[
+            styles.searchInputWrapper,
+            {
+              backgroundColor: theme.card,
+              borderColor: theme.border,
+            },
+          ]}
+        >
+          <Text
+            style={[
+              styles.searchIcon,
+              { color: theme.textSecondary || theme.muted },
+            ]}
+          >
+            🔍
+          </Text>
           <TextInput
             style={[
               styles.searchInput,
-              { 
+              {
                 color: theme.text,
-              }
+              },
             ]}
             placeholder="Aramak istediğiniz öğretmenin adını girin"
-            placeholderTextColor={theme.textSecondary || theme.muted || theme.text}
+            placeholderTextColor={
+              theme.textSecondary || theme.muted || theme.text
+            }
             value={searchText}
             onChangeText={setSearchText}
           />
           {searchText.length > 0 && (
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.clearButton}
-              onPress={() => setSearchText('')}
+              onPress={() => setSearchText("")}
             >
-              <Text style={{ color: theme.textSecondary || theme.muted }}>✕</Text>
+              <Text style={{ color: theme.textSecondary || theme.muted }}>
+                ✕
+              </Text>
             </TouchableOpacity>
           )}
         </View>
       </View>
 
       {loading ? (
-        <View style={[styles.loadingContainer, { backgroundColor: theme.background }]}>
+        <View
+          style={[
+            styles.loadingContainer,
+            { backgroundColor: theme.background },
+          ]}
+        >
           <ActivityIndicator size="large" color={theme.accent} />
           <Text style={[styles.loadingText, { color: theme.text }]}>
             Öğretmenler yükleniyor...
           </Text>
         </View>
       ) : (
-      <FlatList
+        <FlatList
           data={filteredTeachers}
-        renderItem={({ item }) => <TeacherItem teacher={item} theme={theme} />}
-        keyExtractor={(item) => item.OgretmenID.toString()}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-        refreshing={refreshing}
-        onRefresh={handleRefresh}
-        onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.3}
-        ListFooterComponent={renderFooter}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={[styles.emptyText, { color: theme.text }]}>
-                {searchText.trim() !== '' ? 'Arama kriterine uygun öğretmen bulunamadı.' : 'Öğretmen bulunamadı.'}
-            </Text>
-          </View>
-        }
-      />
+          renderItem={({ item }) => (
+            <TeacherItem teacher={item} theme={theme} />
+          )}
+          keyExtractor={(item) => item.OgretmenID.toString()}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.3}
+          ListFooterComponent={renderFooter}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Text style={[styles.emptyText, { color: theme.text }]}>
+                {searchText.trim() !== ""
+                  ? "Arama kriterine uygun öğretmen bulunamadı."
+                  : "Öğretmen bulunamadı."}
+              </Text>
+            </View>
+          }
+        />
       )}
     </View>
   );
@@ -528,8 +586,8 @@ const styles = StyleSheet.create({
     paddingBottom: 15,
   },
   searchInputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderRadius: 12,
     paddingHorizontal: 15,
     paddingVertical: 10,

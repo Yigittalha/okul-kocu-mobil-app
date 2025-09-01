@@ -27,10 +27,10 @@ const StudentHomeworkDetail = () => {
   const formatDate = (dateString) => {
     if (!dateString) return "Belirtilmemiş";
     return new Date(dateString).toLocaleDateString("tr-TR", {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      weekday: 'long'
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      weekday: "long",
     });
   };
 
@@ -73,7 +73,7 @@ const StudentHomeworkDetail = () => {
       const photoUrl = getUploadUrl(homework.Fotograf);
       if (photoUrl) {
         Linking.openURL(photoUrl).catch(() => {
-          Alert.alert('Hata', 'Fotoğraf açılamadı.');
+          Alert.alert("Hata", "Fotoğraf açılamadı.");
         });
       }
     }
@@ -90,25 +90,33 @@ const StudentHomeworkDetail = () => {
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Header */}
       <View style={[styles.header, { borderBottomColor: theme.border }]}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
           <Text style={[styles.backIcon, { color: theme.text }]}>←</Text>
         </TouchableOpacity>
-        
+
         <Text style={[styles.headerTitle, { color: theme.text }]}>
           Ödev Detayı
         </Text>
-        
+
         <ThemeToggle />
       </View>
 
-      <ScrollView 
+      <ScrollView
         style={styles.content}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
         {/* Status Banner */}
         {isOverdue() && (
-          <View style={[styles.overdueBanner, { backgroundColor: theme.danger + '20' }]}>
+          <View
+            style={[
+              styles.overdueBanner,
+              { backgroundColor: theme.danger + "20" },
+            ]}
+          >
             <Text style={[styles.overdueText, { color: theme.danger }]}>
               ⚠️ Bu ödev teslim tarihi geçmiş!
             </Text>
@@ -121,8 +129,18 @@ const StudentHomeworkDetail = () => {
             <Text style={[styles.subjectText, { color: theme.text }]}>
               📖 {homework.DersAdi}
             </Text>
-            <View style={[styles.statusBadge, { backgroundColor: getStatusColor(homework.durum) + '20' }]}>
-              <Text style={[styles.statusBadgeText, { color: getStatusColor(homework.durum) }]}>
+            <View
+              style={[
+                styles.statusBadge,
+                { backgroundColor: getStatusColor(homework.durum) + "20" },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.statusBadgeText,
+                  { color: getStatusColor(homework.durum) },
+                ]}
+              >
                 {getStatusText(homework.durum)}
               </Text>
             </View>
@@ -134,7 +152,8 @@ const StudentHomeworkDetail = () => {
 
           <View style={styles.typeRow}>
             <Text style={[styles.typeText, { color: theme.muted }]}>
-              {getHomeworkTypeIcon(homework.KayitTuru)} {getHomeworkTypeText(homework.KayitTuru)}
+              {getHomeworkTypeIcon(homework.KayitTuru)}{" "}
+              {getHomeworkTypeText(homework.KayitTuru)}
             </Text>
           </View>
         </View>
@@ -144,7 +163,9 @@ const StudentHomeworkDetail = () => {
           <Text style={[styles.sectionTitle, { color: theme.text }]}>
             📋 Açıklama
           </Text>
-          <Text style={[styles.descriptionText, { color: theme.textSecondary }]}>
+          <Text
+            style={[styles.descriptionText, { color: theme.textSecondary }]}
+          >
             {homework.Aciklama || "Açıklama belirtilmemiş"}
           </Text>
         </View>
@@ -154,7 +175,7 @@ const StudentHomeworkDetail = () => {
           <Text style={[styles.sectionTitle, { color: theme.text }]}>
             📅 Tarihler
           </Text>
-          
+
           <View style={styles.dateRow}>
             <Text style={[styles.dateLabel, { color: theme.muted }]}>
               Verilme Tarihi:
@@ -168,9 +189,14 @@ const StudentHomeworkDetail = () => {
             <Text style={[styles.dateLabel, { color: theme.muted }]}>
               Teslim Tarihi:
             </Text>
-            <Text style={[styles.dateValue, { 
-              color: isOverdue() ? theme.danger : theme.text 
-            }]}>
+            <Text
+              style={[
+                styles.dateValue,
+                {
+                  color: isOverdue() ? theme.danger : theme.text,
+                },
+              ]}
+            >
               {formatDate(homework.TeslimTarihi)}
             </Text>
           </View>
@@ -181,7 +207,7 @@ const StudentHomeworkDetail = () => {
           <Text style={[styles.sectionTitle, { color: theme.text }]}>
             ℹ️ Ek Bilgiler
           </Text>
-          
+
           <View style={styles.infoRow}>
             <Text style={[styles.infoLabel, { color: theme.muted }]}>
               Puan:
@@ -225,17 +251,19 @@ const StudentHomeworkDetail = () => {
             <Text style={[styles.sectionTitle, { color: theme.text }]}>
               📷 Ödev Fotoğrafı
             </Text>
-            
-            <TouchableOpacity
-              style={styles.photoContainer}
-              onPress={openPhoto}
-            >
+
+            <TouchableOpacity style={styles.photoContainer} onPress={openPhoto}>
               <Image
                 source={{ uri: getUploadUrl(homework.Fotograf) }}
                 style={styles.photoImage}
                 resizeMode="cover"
               />
-              <View style={[styles.photoOverlay, { backgroundColor: theme.background + '80' }]}>
+              <View
+                style={[
+                  styles.photoOverlay,
+                  { backgroundColor: theme.background + "80" },
+                ]}
+              >
                 <Text style={[styles.photoOverlayText, { color: theme.text }]}>
                   👆 Fotoğrafı büyütmek için dokunun
                 </Text>
@@ -253,9 +281,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 20,
     paddingTop: 60,
     paddingBottom: 20,
@@ -266,11 +294,11 @@ const styles = StyleSheet.create({
   },
   backIcon: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   content: {
     flex: 1,
@@ -282,31 +310,31 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     marginBottom: 16,
-    alignItems: 'center',
+    alignItems: "center",
   },
   overdueText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   mainCard: {
     borderRadius: 12,
     padding: 20,
     marginBottom: 16,
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
   subjectRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 12,
   },
   subjectText: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     flex: 1,
   },
   statusBadge: {
@@ -316,11 +344,11 @@ const styles = StyleSheet.create({
   },
   statusBadgeText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   topicText: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 8,
   },
   typeRow: {
@@ -328,21 +356,21 @@ const styles = StyleSheet.create({
   },
   typeText: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   infoCard: {
     borderRadius: 12,
     padding: 20,
     marginBottom: 16,
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 16,
   },
   descriptionText: {
@@ -350,59 +378,59 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   dateRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 12,
   },
   dateLabel: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   dateValue: {
     fontSize: 14,
-    fontWeight: '600',
-    textAlign: 'right',
+    fontWeight: "600",
+    textAlign: "right",
     flex: 1,
   },
   infoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 12,
   },
   infoLabel: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   infoValue: {
     fontSize: 14,
-    fontWeight: '600',
-    textAlign: 'right',
+    fontWeight: "600",
+    textAlign: "right",
     flex: 1,
   },
   photoContainer: {
-    position: 'relative',
+    position: "relative",
     borderRadius: 8,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   photoImage: {
-    width: '100%',
+    width: "100%",
     height: 200,
     borderRadius: 8,
   },
   photoOverlay: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
     padding: 12,
-    alignItems: 'center',
+    alignItems: "center",
   },
   photoOverlayText: {
     fontSize: 12,
-    fontWeight: '500',
+    fontWeight: "500",
   },
 });
 
-export default StudentHomeworkDetail; 
+export default StudentHomeworkDetail;

@@ -18,7 +18,7 @@ export const darkClassic = {
   accent: "#4F9CF9",
   success: "#22C55E",
   warning: "#F59E0B",
-  danger: "#EF4444"
+  danger: "#EF4444",
 };
 
 export const themes = {

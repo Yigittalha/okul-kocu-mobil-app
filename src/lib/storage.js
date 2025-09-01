@@ -84,5 +84,5 @@ export async function clearAllStorage() {
     SecureStore.deleteItemAsync(USER_KEY),
     SecureStore.deleteItemAsync(THEME_KEY),
   ]);
-  console.log('🧹 Tüm storage temizlendi');
+  console.log("🧹 Tüm storage temizlendi");
 }

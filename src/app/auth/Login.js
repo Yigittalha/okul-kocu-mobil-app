@@ -28,7 +28,10 @@ const Login = () => {
   const handleClearStorage = async () => {
     try {
       await clearAllStorage();
-      Alert.alert("Başarılı", "Storage temizlendi. Lütfen yeniden giriş yapın.");
+      Alert.alert(
+        "Başarılı",
+        "Storage temizlendi. Lütfen yeniden giriş yapın.",
+      );
     } catch (error) {
       Alert.alert("Hata", "Storage temizlenirken hata oluştu");
     }
@@ -55,7 +58,7 @@ const Login = () => {
 
       console.log("🔍 Login API response received");
       console.log("🔍 Response data:", response.data);
-      
+
       const { token, rol } = response.data;
 
       if (token && rol) {
@@ -91,7 +94,7 @@ const Login = () => {
       console.error("❌ Error type:", err.constructor.name);
       console.error("❌ Error message:", err.message);
       console.error("❌ Error code:", err.code);
-      
+
       if (err.response) {
         console.error("❌ Response status:", err.response.status);
         console.error("❌ Response data:", err.response.data);
@@ -102,7 +105,7 @@ const Login = () => {
       } else {
         console.error("❌ Error setting up request");
       }
-      
+
       if (err.response?.status === 400) {
         Alert.alert(
           "Giriş başarısız",
@@ -110,10 +113,13 @@ const Login = () => {
         );
       } else if (err.response?.data === false) {
         Alert.alert("Giriş başarısız", "Kullanıcı adı veya şifre yanlış");
-      } else if (err.code === 'ERR_NETWORK' || err.message.includes('Network Error')) {
+      } else if (
+        err.code === "ERR_NETWORK" ||
+        err.message.includes("Network Error")
+      ) {
         Alert.alert(
           "Bağlantı Hatası",
-          "Sunucuya bağlanılamıyor. Lütfen internet bağlantınızı kontrol edin."
+          "Sunucuya bağlanılamıyor. Lütfen internet bağlantınızı kontrol edin.",
         );
       } else {
         Alert.alert(
@@ -213,10 +219,7 @@ const Login = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[
-              styles.clearButton,
-              { backgroundColor: theme.input },
-            ]}
+            style={[styles.clearButton, { backgroundColor: theme.input }]}
             onPress={handleClearStorage}
           >
             <Text style={[styles.clearButtonText, { color: theme.text }]}>

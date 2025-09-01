@@ -43,11 +43,11 @@ const StudentHomeworkList = () => {
       // Önce geçirilen öğrenci bilgilerini kontrol et
       if (passedStudentInfo && passedStudentInfo.OgrenciId) {
         setStudentInfo(passedStudentInfo);
-        
+
         // Ödev listesini al
         const homeworkData = await api.post("/student/homework", {
           OgrenciID: passedStudentInfo.OgrenciId,
-          Sinif: passedStudentInfo.Sinif || ""
+          Sinif: passedStudentInfo.Sinif || "",
         });
 
         if (homeworkData?.data) {
@@ -57,7 +57,7 @@ const StudentHomeworkList = () => {
             const dateB = new Date(b.tarih);
             return dateB - dateA; // En yeni tarih üstte
           });
-          
+
           setHomeworkList(sortedHomework);
         } else {
           setHomeworkList([]);
@@ -67,15 +67,15 @@ const StudentHomeworkList = () => {
 
       // Kullanıcı bilgilerini al (OgrenciID ve Sinif dahil)
       const userResponse = await api.post("/user/info", {});
-      
+
       if (userResponse?.data) {
         if (userResponse.data.OgrenciId) {
           setStudentInfo(userResponse.data);
-          
+
           // Ödev listesini al
           const homeworkData = await api.post("/student/homework", {
             OgrenciID: userResponse.data.OgrenciId,
-            Sinif: userResponse.data.Sinif || ""
+            Sinif: userResponse.data.Sinif || "",
           });
 
           if (homeworkData?.data) {
@@ -85,14 +85,14 @@ const StudentHomeworkList = () => {
               const dateB = new Date(b.tarih);
               return dateB - dateA; // En yeni tarih üstte
             });
-            
+
             setHomeworkList(sortedHomework);
           } else {
             setHomeworkList([]);
           }
         } else {
           setError("Öğrenci ID bilgisi bulunamadı. Lütfen tekrar giriş yapın.");
-          
+
           // Oturumu sonlandır
           setTimeout(() => {
             clearSession();
@@ -100,7 +100,7 @@ const StudentHomeworkList = () => {
         }
       } else {
         setError("Kullanıcı bilgileri alınamadı. Lütfen tekrar giriş yapın.");
-        
+
         // Oturumu sonlandır
         setTimeout(() => {
           clearSession();
@@ -109,7 +109,7 @@ const StudentHomeworkList = () => {
     } catch (error) {
       if (error.response?.status === 401) {
         clearSession();
-        navigation.navigate('Login');
+        navigation.navigate("Login");
       } else {
         setError("Ödev listesi alınırken bir hata oluştu: " + error.message);
       }
@@ -167,7 +167,7 @@ const StudentHomeworkList = () => {
   };
 
   const navigateToDetail = (homework) => {
-    navigation.navigate('StudentHomeworkDetail', { homework });
+    navigation.navigate("StudentHomeworkDetail", { homework });
   };
 
   if (loading) {
@@ -199,15 +199,15 @@ const StudentHomeworkList = () => {
         <TouchableOpacity style={styles.menuButton} onPress={openMenu}>
           <Text style={[styles.menuIcon, { color: theme.text }]}>☰</Text>
         </TouchableOpacity>
-        
+
         <Text style={[styles.headerTitle, { color: theme.text }]}>
           Ödevlerim
         </Text>
-        
+
         <ThemeToggle />
       </View>
 
-      <RefreshableScrollView 
+      <RefreshableScrollView
         onRefresh={handleRefresh}
         refreshing={refreshing}
         style={styles.content}
@@ -223,7 +223,7 @@ const StudentHomeworkList = () => {
               style={[styles.retryButton, { backgroundColor: theme.accent }]}
               onPress={fetchStudentHomework}
             >
-              <Text style={[styles.retryButtonText, { color: '#fff' }]}>
+              <Text style={[styles.retryButtonText, { color: "#fff" }]}>
                 Tekrar Dene
               </Text>
             </TouchableOpacity>
@@ -239,29 +239,42 @@ const StudentHomeworkList = () => {
             <TouchableOpacity
               key={homework.id || index}
               style={[
-                styles.homeworkCard, 
-                { 
+                styles.homeworkCard,
+                {
                   backgroundColor: theme.card,
                   borderLeftWidth: isOverdue(homework) ? 4 : 0,
-                  borderLeftColor: isOverdue(homework) ? theme.danger : 'transparent'
-                }
+                  borderLeftColor: isOverdue(homework)
+                    ? theme.danger
+                    : "transparent",
+                },
               ]}
               onPress={() => navigateToDetail(homework)}
             >
               <View style={styles.homeworkHeader}>
                 <View style={styles.subjectContainer}>
-                  <Text style={[
-                    styles.subjectText, 
-                    { color: isOverdue(homework) ? theme.danger : theme.text }
-                  ]}>
+                  <Text
+                    style={[
+                      styles.subjectText,
+                      {
+                        color: isOverdue(homework) ? theme.danger : theme.text,
+                      },
+                    ]}
+                  >
                     📖 {homework.DersAdi}
                   </Text>
-                  <Text style={[styles.topicText, { color: theme.textSecondary }]}>
+                  <Text
+                    style={[styles.topicText, { color: theme.textSecondary }]}
+                  >
                     {homework.Konu}
                   </Text>
                 </View>
                 <View style={styles.statusContainer}>
-                  <Text style={[styles.statusText, { color: getStatusColor(homework.durum) }]}>
+                  <Text
+                    style={[
+                      styles.statusText,
+                      { color: getStatusColor(homework.durum) },
+                    ]}
+                  >
                     {getStatusText(homework.durum)}
                   </Text>
                   <Text style={[styles.typeText, { color: theme.muted }]}>
@@ -270,7 +283,9 @@ const StudentHomeworkList = () => {
                 </View>
               </View>
 
-              <Text style={[styles.descriptionText, { color: theme.textSecondary }]}>
+              <Text
+                style={[styles.descriptionText, { color: theme.textSecondary }]}
+              >
                 {homework.Aciklama}
               </Text>
 
@@ -279,10 +294,14 @@ const StudentHomeworkList = () => {
                   <Text style={[styles.dateLabel, { color: theme.muted }]}>
                     Teslim Tarihi:
                   </Text>
-                  <Text style={[
-                    styles.dateText, 
-                    { color: isOverdue(homework) ? theme.danger : theme.text }
-                  ]}>
+                  <Text
+                    style={[
+                      styles.dateText,
+                      {
+                        color: isOverdue(homework) ? theme.danger : theme.text,
+                      },
+                    ]}
+                  >
                     {formatDate(homework.TeslimTarihi)}
                     {isOverdue(homework) && " ⚠️"}
                   </Text>
@@ -309,9 +328,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 20,
     paddingTop: 60,
     paddingBottom: 20,
@@ -322,11 +341,11 @@ const styles = StyleSheet.create({
   },
   menuIcon: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   content: {
     flex: 1,
@@ -336,8 +355,8 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   loadingText: {
     marginTop: 16,
@@ -347,12 +366,12 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 20,
     marginBottom: 16,
-    alignItems: 'center',
+    alignItems: "center",
   },
   errorText: {
     fontSize: 16,
     marginBottom: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
   retryButton: {
     paddingHorizontal: 20,
@@ -361,31 +380,31 @@ const styles = StyleSheet.create({
   },
   retryButtonText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   emptyCard: {
     borderRadius: 12,
     padding: 40,
-    alignItems: 'center',
+    alignItems: "center",
   },
   emptyText: {
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
   homeworkCard: {
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
   homeworkHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     marginBottom: 12,
   },
   subjectContainer: {
@@ -393,19 +412,19 @@ const styles = StyleSheet.create({
   },
   subjectText: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 4,
   },
   topicText: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   statusContainer: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
   },
   statusText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 4,
   },
   typeText: {
@@ -417,9 +436,9 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   homeworkFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   dateContainer: {
     flex: 1,
@@ -430,15 +449,15 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   photoIndicator: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
   },
   photoText: {
     fontSize: 12,
-    fontWeight: '500',
+    fontWeight: "500",
   },
 });
 
-export default StudentHomeworkList; 
+export default StudentHomeworkList;

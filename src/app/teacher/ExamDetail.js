@@ -28,79 +28,69 @@ const ExamDetail = () => {
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("tr-TR", {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      weekday: 'long'
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      weekday: "long",
     });
   };
 
   const handleDeleteExam = () => {
-    Alert.alert(
-      "Sınavı Sil",
-      "Bu sınavı silmek istediğinizden emin misiniz?",
-      [
-        {
-          text: "İptal",
-          style: "cancel"
-        },
-        {
-          text: "Sil",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              setDeleting(true);
-              await deleteExam(exam.id, true);
-              
-              Alert.alert(
-                "Başarılı",
-                "Sınav başarıyla silindi!",
-                [{ 
-                  text: "Tamam", 
-                  onPress: () => navigation.goBack() 
-                }]
-              );
-            } catch (error) {
-              console.error("Sınav silme hatası:", error);
-              
-              const errorMessage = error.response 
-                ? `Sunucu hatası: ${error.response.status} - ${error.response.data?.message || 'Bilinmeyen hata'}`
-                : 'Sınav silinirken bir bağlantı hatası oluştu';
+    Alert.alert("Sınavı Sil", "Bu sınavı silmek istediğinizden emin misiniz?", [
+      {
+        text: "İptal",
+        style: "cancel",
+      },
+      {
+        text: "Sil",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            setDeleting(true);
+            await deleteExam(exam.id, true);
 
-              Alert.alert(
-                "Hata",
-                errorMessage,
-                [{ text: "Tamam" }]
-              );
-            } finally {
-              setDeleting(false);
-            }
+            Alert.alert("Başarılı", "Sınav başarıyla silindi!", [
+              {
+                text: "Tamam",
+                onPress: () => navigation.goBack(),
+              },
+            ]);
+          } catch (error) {
+            console.error("Sınav silme hatası:", error);
+
+            const errorMessage = error.response
+              ? `Sunucu hatası: ${error.response.status} - ${error.response.data?.message || "Bilinmeyen hata"}`
+              : "Sınav silinirken bir bağlantı hatası oluştu";
+
+            Alert.alert("Hata", errorMessage, [{ text: "Tamam" }]);
+          } finally {
+            setDeleting(false);
           }
-        }
-      ]
-    );
+        },
+      },
+    ]);
   };
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={[styles.header, { borderBottomColor: theme.border }]}>
-        <TouchableOpacity 
-          style={styles.backButton} 
+        <TouchableOpacity
+          style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
           <Text style={[styles.backButtonText, { color: theme.text }]}>
             ← Geri
           </Text>
         </TouchableOpacity>
-        
+
         <Text style={[styles.headerTitle, { color: theme.text }]}>
           Sınav Detayları
         </Text>
-        
+
         <ThemeToggle />
       </View>
 
-      <ScrollView 
+      <ScrollView
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -117,21 +107,27 @@ const ExamDetail = () => {
 
           <View style={styles.detailSection}>
             <View style={styles.detailRow}>
-              <Text style={[styles.detailLabel, { color: theme.muted }]}>Ders:</Text>
+              <Text style={[styles.detailLabel, { color: theme.muted }]}>
+                Ders:
+              </Text>
               <Text style={[styles.detailValue, { color: theme.text }]}>
                 {exam.Ders}
               </Text>
             </View>
 
             <View style={styles.detailRow}>
-              <Text style={[styles.detailLabel, { color: theme.muted }]}>Sınıf:</Text>
+              <Text style={[styles.detailLabel, { color: theme.muted }]}>
+                Sınıf:
+              </Text>
               <Text style={[styles.detailValue, { color: theme.text }]}>
                 {exam.Sinif}
               </Text>
             </View>
 
             <View style={styles.detailRow}>
-              <Text style={[styles.detailLabel, { color: theme.muted }]}>Sınav Süresi:</Text>
+              <Text style={[styles.detailLabel, { color: theme.muted }]}>
+                Sınav Süresi:
+              </Text>
               <Text style={[styles.detailValue, { color: theme.text }]}>
                 {exam.SinavSuresi} dakika
               </Text>
@@ -152,16 +148,16 @@ const ExamDetail = () => {
 
         <TouchableOpacity
           style={[
-            styles.deleteButton, 
-            { 
-              backgroundColor: isDark ? theme.danger : '#FF3B30', 
-              opacity: deleting ? 0.5 : 1 
-            }
+            styles.deleteButton,
+            {
+              backgroundColor: isDark ? theme.danger : "#FF3B30",
+              opacity: deleting ? 0.5 : 1,
+            },
           ]}
           onPress={handleDeleteExam}
           disabled={deleting}
         >
-          <Text style={[styles.deleteButtonText, { color: '#fff' }]}>
+          <Text style={[styles.deleteButtonText, { color: "#fff" }]}>
             {deleting ? "Siliniyor..." : "Sınavı Sil"}
           </Text>
         </TouchableOpacity>
@@ -206,14 +202,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   detailHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 20,
   },
   examTitle: {
     fontSize: 22,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   examDate: {
     fontSize: 14,
@@ -222,8 +218,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   detailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 12,
   },
   detailLabel: {
@@ -232,7 +228,7 @@ const styles = StyleSheet.create({
   },
   detailValue: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   descriptionSection: {
     marginTop: 10,

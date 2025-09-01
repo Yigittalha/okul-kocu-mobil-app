@@ -28,7 +28,7 @@ const TeacherSchedule = ({ route }) => {
   const [teacherId, setTeacherId] = useState(null);
   const [showAttendanceResults, setShowAttendanceResults] = useState(false);
   const [attendanceData, setAttendanceData] = useState(null);
-  
+
   // Route parametrelerini al (yoklama seçimleri ve dersler)
   const routeParams = route?.params;
   const attendanceSelections = routeParams?.selections;
@@ -38,26 +38,34 @@ const TeacherSchedule = ({ route }) => {
   const fetchTeacherSchedule = async () => {
     try {
       setLoading(true);
-      
+
       // Önce öğretmen bilgilerini çekerek ID'yi alıyoruz
-      const userInfoResponse = await api.post("/user/info", {}, {
-        headers: {
-          "Content-Type": "application/json"
-        }
-      });
-      
+      const userInfoResponse = await api.post(
+        "/user/info",
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
       if (userInfoResponse?.data?.OgretmenID) {
         const id = userInfoResponse.data.OgretmenID;
         setTeacherId(id);
-        
+
         // Öğretmen ID'si ile ders programını çekiyoruz
-        const response = await api.post("/schedule/getteacher", { 
-          id: id 
-        }, {
-          headers: {
-            "Content-Type": "application/json"
-          }
-        });
+        const response = await api.post(
+          "/schedule/getteacher",
+          {
+            id: id,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          },
+        );
 
         // TODO: remove before prod
         // console.log("✅ Schedule data fetched successfully:", response.data);
@@ -66,36 +74,42 @@ const TeacherSchedule = ({ route }) => {
           // TODO: remove before prod
           // console.log("📋 Örnek program kaydı:", JSON.stringify(response.data[0], null, 2));
         }
-        
+
         if (Array.isArray(response.data)) {
           // Günlere göre sıralama
-          const orderedDays = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma"];
+          const orderedDays = [
+            "Pazartesi",
+            "Salı",
+            "Çarşamba",
+            "Perşembe",
+            "Cuma",
+          ];
           const sortedSchedule = [...response.data].sort((a, b) => {
             const dayOrderA = orderedDays.indexOf(a.Gun);
             const dayOrderB = orderedDays.indexOf(b.Gun);
-            
+
             if (dayOrderA !== dayOrderB) return dayOrderA - dayOrderB;
-            
+
             // Aynı gün içinde saat sıralaması
             const timeA = a.DersSaati.split("-")[0];
             const timeB = b.DersSaati.split("-")[0];
             return timeA.localeCompare(timeB);
           });
-          
+
           // API'den gelen yanıtta Derslik alanı yoksa, her derse geçici olarak derslik bilgisi ekleyelim
           // Bu kısım sadece test amaçlı olup, asıl derslik bilgisi API tarafından sağlanmalıdır
-          const scheduleWithClassroom = sortedSchedule.map(lesson => {
+          const scheduleWithClassroom = sortedSchedule.map((lesson) => {
             // Eğer Derslik alanı yoksa veya boşsa, sınıf ve ders bilgisine dayalı olarak derslik bilgisi ekleyelim
             if (!lesson.Derslik) {
-              const classNumber = lesson.Sinif.split('-')[0]; // "5-A" -> "5"
+              const classNumber = lesson.Sinif.split("-")[0]; // "5-A" -> "5"
               return {
                 ...lesson,
-                Derslik: `D${classNumber}${Math.floor(Math.random() * 5) + 1}` // D51, D52, D53, D54, D55 gibi
+                Derslik: `D${classNumber}${Math.floor(Math.random() * 5) + 1}`, // D51, D52, D53, D54, D55 gibi
               };
             }
             return lesson;
           });
-          
+
           setSchedule(scheduleWithClassroom);
           setError(null);
         } else {
@@ -109,8 +123,11 @@ const TeacherSchedule = ({ route }) => {
     } catch (error) {
       // console.log("❌ Error fetching teacher schedule:", error);
       setError("Ders programı yüklenirken bir hata oluştu");
-      
-      if (error.response?.status === 401 || error.response?.data?.message === "Token geçersiz veya süresi dolmuş") {
+
+      if (
+        error.response?.status === 401 ||
+        error.response?.data?.message === "Token geçersiz veya süresi dolmuş"
+      ) {
         setTimeout(() => {
           clearSession();
         }, 2000);
@@ -151,9 +168,9 @@ const TeacherSchedule = ({ route }) => {
       const payload = {
         Sinif: lesson.Sinif || lesson.sinif || attendanceSelections.sinifAdi,
         Tarih: attendanceSelections.dateISO,
-        DersSaati: lesson.DersSaati || lesson.saat || '--:--',
+        DersSaati: lesson.DersSaati || lesson.saat || "--:--",
         ProgramID: lesson.ProgramID || lesson.id,
-        Ders: lesson.Ders || lesson.ders || lesson.dersAdi
+        Ders: lesson.Ders || lesson.ders || lesson.dersAdi,
       };
 
       // TODO: remove before prod
@@ -166,15 +183,15 @@ const TeacherSchedule = ({ route }) => {
       // });
 
       // API isteği gönder
-      const response = await api.post('/teacher/attendance', payload, {
+      const response = await api.post("/teacher/attendance", payload, {
         headers: {
-          'Content-Type': 'application/json'
-        }
+          "Content-Type": "application/json",
+        },
       });
 
       if (response.status === 200) {
         // console.log('✅ Yoklama başlatıldı', response.data);
-        
+
         // Attendance results ekranını göster
         setAttendanceData({
           students: response.data,
@@ -182,19 +199,19 @@ const TeacherSchedule = ({ route }) => {
             sinif: payload.Sinif,
             tarih: payload.Tarih,
             dersSaati: payload.DersSaati,
-            ders: payload.Ders
-          }
+            ders: payload.Ders,
+          },
         });
         setShowAttendanceResults(true);
         // console.log('✅ AttendanceResults ekranı gösteriliyor');
       }
     } catch (error) {
       // console.log('❌ Yoklama başlatma hatası:', error);
-      
+
       if (error.response?.status === 401) {
         // console.log('🔐 Yetkilendirme hatası - oturum temizleniyor');
         clearSession();
-        navigation.navigate('Login');
+        navigation.navigate("Login");
       } else if (error.response?.status === 404) {
         // API henüz hazır değil, sadece log
         // console.log('📦 Yoklama isteği hazırlanıyor:', payload);
@@ -216,43 +233,59 @@ const TeacherSchedule = ({ route }) => {
   // Günlere göre gruplandırılmış programı render eden bileşen
   const renderDaySchedule = ({ item: day }) => {
     const lessons = groupedSchedule[day];
-    
+
     return (
       <View style={[styles.dayContainer, { backgroundColor: theme.card }]}>
         <Text style={[styles.dayTitle, { color: theme.text }]}>{day}</Text>
         {lessons.map((lesson, index) => (
-          <View 
-            key={lesson.ProgramID || lesson.id || index} 
+          <View
+            key={lesson.ProgramID || lesson.id || index}
             style={[styles.lessonItem, { borderBottomColor: theme.border }]}
           >
             <View style={styles.timeContainer}>
               <Text style={[styles.timeText, { color: theme.text }]}>
-                {lesson.DersSaati || lesson.saat || '--:--'}
+                {lesson.DersSaati || lesson.saat || "--:--"}
               </Text>
             </View>
             <View style={styles.lessonInfoContainer}>
               <View style={styles.classContainer}>
                 <Text style={[styles.classText, { color: theme.accent }]}>
-                  {lesson.Sinif || lesson.sinif || attendanceSelections?.sinifAdi}
+                  {lesson.Sinif ||
+                    lesson.sinif ||
+                    attendanceSelections?.sinifAdi}
                 </Text>
                 {lesson.Derslik && (
-                  <Text style={[styles.classroomText, { color: theme.textSecondary || theme.text }]}>
+                  <Text
+                    style={[
+                      styles.classroomText,
+                      { color: theme.textSecondary || theme.text },
+                    ]}
+                  >
                     {`Derslik: ${lesson.Derslik}`}
                   </Text>
                 )}
               </View>
               <Text style={[styles.lessonName, { color: theme.text }]}>
-                {lesson.Ders || lesson.ders || lesson.dersAdi || 'Ders'}
+                {lesson.Ders || lesson.ders || lesson.dersAdi || "Ders"}
               </Text>
             </View>
             {attendanceSelections && (
               <TouchableOpacity
-                style={[styles.attendanceButton, { backgroundColor: theme.accent }]}
+                style={[
+                  styles.attendanceButton,
+                  { backgroundColor: theme.accent },
+                ]}
                 onPress={() => startAttendanceForLesson(lesson)}
               >
-                <Text style={[styles.attendanceButtonText, { 
-                  color: theme.background === '#f5f5f5' ? '#fff' : theme.primary 
-                }]}>
+                <Text
+                  style={[
+                    styles.attendanceButtonText,
+                    {
+                      color:
+                        theme.background === "#f5f5f5" ? "#fff" : theme.primary,
+                    },
+                  ]}
+                >
                   Yoklamayı Başlat
                 </Text>
               </TouchableOpacity>
@@ -266,7 +299,7 @@ const TeacherSchedule = ({ route }) => {
   // Eğer attendance results gösteriliyorsa AttendanceResults bileşenini render et
   if (showAttendanceResults && attendanceData) {
     return (
-      <AttendanceResults 
+      <AttendanceResults
         route={{ params: attendanceData }}
         navigation={navigation}
       />
@@ -275,7 +308,9 @@ const TeacherSchedule = ({ route }) => {
 
   if (loading) {
     return (
-      <View style={[styles.loadingContainer, { backgroundColor: theme.background }]}>
+      <View
+        style={[styles.loadingContainer, { backgroundColor: theme.background }]}
+      >
         <ActivityIndicator size="large" color={theme.accent} />
         <Text style={[styles.loadingText, { color: theme.text }]}>
           Ders programı yükleniyor...
@@ -286,7 +321,9 @@ const TeacherSchedule = ({ route }) => {
 
   if (error) {
     return (
-      <View style={[styles.loadingContainer, { backgroundColor: theme.background }]}>
+      <View
+        style={[styles.loadingContainer, { backgroundColor: theme.background }]}
+      >
         <Text style={[styles.errorText, { color: theme.danger }]}>{error}</Text>
         <TouchableOpacity
           style={[styles.retryButton, { backgroundColor: theme.accent }]}
@@ -304,33 +341,36 @@ const TeacherSchedule = ({ route }) => {
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Header */}
       <View style={[styles.header, { borderBottomColor: theme.border }]}>
-        <TouchableOpacity 
-          style={styles.menuButton} 
+        <TouchableOpacity
+          style={styles.menuButton}
           onPress={attendanceSelections ? () => navigation.goBack() : openMenu}
         >
           <Text style={[styles.menuIcon, { color: theme.text }]}>
-            {attendanceSelections ? '←' : '☰'}
+            {attendanceSelections ? "←" : "☰"}
           </Text>
         </TouchableOpacity>
 
         <View style={styles.headerTitleContainer}>
           <Text style={[styles.headerTitle, { color: theme.text }]}>
-            {apiLessons ? 'Yoklama Dersleri' : 'Ders Programı'}
+            {apiLessons ? "Yoklama Dersleri" : "Ders Programı"}
           </Text>
           {attendanceSelections && (
             <Text style={[styles.attendanceInfo, { color: theme.accent }]}>
-              📋 {attendanceSelections.sinifAdi} - {attendanceSelections.dateISO}
+              📋 {attendanceSelections.sinifAdi} -{" "}
+              {attendanceSelections.dateISO}
             </Text>
           )}
         </View>
 
         <ThemeToggle />
       </View>
-      
+
       {schedule.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Text style={[styles.emptyText, { color: theme.text }]}>
-            {apiLessons ? 'Yoklama dersleri bulunamadı.' : 'Ders programı bulunamadı.'}
+            {apiLessons
+              ? "Yoklama dersleri bulunamadı."
+              : "Ders programı bulunamadı."}
           </Text>
         </View>
       ) : apiLessons ? (
@@ -338,47 +378,70 @@ const TeacherSchedule = ({ route }) => {
         <FlatList
           data={schedule}
           renderItem={({ item: lesson, index }) => (
-            <View 
-              key={lesson.ProgramID || lesson.id || index} 
-              style={[styles.lessonItem, { 
-                borderBottomColor: theme.border,
-                backgroundColor: theme.card,
-                marginHorizontal: 16,
-                marginVertical: 4,
-                borderRadius: 8,
-                padding: 16
-              }]}
+            <View
+              key={lesson.ProgramID || lesson.id || index}
+              style={[
+                styles.lessonItem,
+                {
+                  borderBottomColor: theme.border,
+                  backgroundColor: theme.card,
+                  marginHorizontal: 16,
+                  marginVertical: 4,
+                  borderRadius: 8,
+                  padding: 16,
+                },
+              ]}
             >
               <View style={styles.lessonInfoContainer}>
                 <View style={styles.classContainer}>
                   <Text style={[styles.classText, { color: theme.accent }]}>
-                    {lesson.Sinif || lesson.sinif || attendanceSelections?.sinifAdi}
+                    {lesson.Sinif ||
+                      lesson.sinif ||
+                      attendanceSelections?.sinifAdi}
                   </Text>
                   {lesson.DersSaati && (
-                    <Text style={[styles.timeText, { color: theme.text, marginLeft: 10 }]}>
+                    <Text
+                      style={[
+                        styles.timeText,
+                        { color: theme.text, marginLeft: 10 },
+                      ]}
+                    >
                       {lesson.DersSaati}
                     </Text>
                   )}
                 </View>
                 <Text style={[styles.lessonName, { color: theme.text }]}>
-                  {lesson.Ders || lesson.ders || lesson.dersAdi || 'Ders'}
+                  {lesson.Ders || lesson.ders || lesson.dersAdi || "Ders"}
                 </Text>
               </View>
               {attendanceSelections && (
                 <TouchableOpacity
-                  style={[styles.attendanceButton, { backgroundColor: theme.accent }]}
+                  style={[
+                    styles.attendanceButton,
+                    { backgroundColor: theme.accent },
+                  ]}
                   onPress={() => startAttendanceForLesson(lesson)}
                 >
-                  <Text style={[styles.attendanceButtonText, { 
-                    color: theme.background === '#f5f5f5' ? '#fff' : theme.primary 
-                  }]}>
+                  <Text
+                    style={[
+                      styles.attendanceButtonText,
+                      {
+                        color:
+                          theme.background === "#f5f5f5"
+                            ? "#fff"
+                            : theme.primary,
+                      },
+                    ]}
+                  >
                     Yoklamayı Başlat
                   </Text>
                 </TouchableOpacity>
               )}
             </View>
           )}
-          keyExtractor={(item, index) => item.ProgramID || item.id || index.toString()}
+          keyExtractor={(item, index) =>
+            item.ProgramID || item.id || index.toString()
+          }
           contentContainerStyle={styles.scheduleList}
           showsVerticalScrollIndicator={false}
         />
@@ -445,7 +508,7 @@ const styles = StyleSheet.create({
   },
   headerTitleContainer: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
   headerTitle: {
     fontSize: 20,
@@ -525,7 +588,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 8,
     marginLeft: 10,
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
   },
   attendanceButtonText: {
     fontSize: 12,
@@ -533,4 +596,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TeacherSchedule; 
+export default TeacherSchedule;

@@ -33,7 +33,7 @@ const ExamsList = () => {
   const fetchTeacherData = async () => {
     try {
       const userData = await fetchUserInfo(true);
-      
+
       if (userData && userData.OgretmenID) {
         setTeacherData(userData);
         await fetchExams(userData.OgretmenID);
@@ -41,7 +41,7 @@ const ExamsList = () => {
         Alert.alert(
           "Hata",
           "Öğretmen bilgileri alınamadı. Lütfen tekrar giriş yapın.",
-          [{ text: "Tamam", onPress: () => clearSession() }]
+          [{ text: "Tamam", onPress: () => clearSession() }],
         );
       }
     } catch (error) {
@@ -49,7 +49,7 @@ const ExamsList = () => {
       Alert.alert(
         "Hata",
         "Öğretmen bilgileri alınamadı. Lütfen tekrar giriş yapın.",
-        [{ text: "Tamam", onPress: () => clearSession() }]
+        [{ text: "Tamam", onPress: () => clearSession() }],
       );
     } finally {
       setLoading(false);
@@ -63,26 +63,22 @@ const ExamsList = () => {
       setExams(examsList);
     } catch (error) {
       console.error("Sınavları çekme hatası:", error);
-      
-      // Daha detaylı hata mesajı
-      const errorMessage = error.response 
-        ? `Sunucu hatası: ${error.response.status} - ${error.response.data?.message || 'Bilinmeyen hata'}`
-        : 'Sınavlar yüklenirken bir bağlantı hatası oluştu';
 
-      Alert.alert(
-        "Hata",
-        errorMessage,
-        [
-          { 
-            text: "Tekrar Dene", 
-            onPress: () => fetchExams(ogretmenID) 
-          },
-          { 
-            text: "İptal", 
-            style: "cancel" 
-          }
-        ]
-      );
+      // Daha detaylı hata mesajı
+      const errorMessage = error.response
+        ? `Sunucu hatası: ${error.response.status} - ${error.response.data?.message || "Bilinmeyen hata"}`
+        : "Sınavlar yüklenirken bir bağlantı hatası oluştu";
+
+      Alert.alert("Hata", errorMessage, [
+        {
+          text: "Tekrar Dene",
+          onPress: () => fetchExams(ogretmenID),
+        },
+        {
+          text: "İptal",
+          style: "cancel",
+        },
+      ]);
     } finally {
       setRefreshing(false);
     }
@@ -96,26 +92,29 @@ const ExamsList = () => {
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("tr-TR", {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      weekday: 'long'
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      weekday: "long",
     });
   };
 
   const renderExamItem = ({ item }) => (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={[
-        styles.examCard, 
-        { 
+        styles.examCard,
+        {
           backgroundColor: theme.card,
-          borderLeftColor: item.Ders === 'Matematik' ? theme.accent : 
-                           item.Ders === 'Türkçe' ? theme.warning : 
-                           theme.primary,
-          borderLeftWidth: 5
-        }
+          borderLeftColor:
+            item.Ders === "Matematik"
+              ? theme.accent
+              : item.Ders === "Türkçe"
+                ? theme.warning
+                : theme.primary,
+          borderLeftWidth: 5,
+        },
       ]}
-      onPress={() => navigation.navigate('ExamDetail', { exam: item })}
+      onPress={() => navigation.navigate("ExamDetail", { exam: item })}
     >
       <View style={styles.examHeader}>
         <View style={styles.examTitleContainer}>
@@ -127,25 +126,27 @@ const ExamsList = () => {
           </Text>
         </View>
         <View style={styles.examBadgeContainer}>
-          <Text style={[
-            styles.examBadge, 
-            { 
-              backgroundColor: theme.accent + '20', 
-              color: theme.accent 
-            }
-          ]}>
+          <Text
+            style={[
+              styles.examBadge,
+              {
+                backgroundColor: theme.accent + "20",
+                color: theme.accent,
+              },
+            ]}
+          >
             {item.SinavSuresi} dk
           </Text>
         </View>
       </View>
-      
+
       <View style={styles.examFooter}>
         <Text style={[styles.examDate, { color: theme.textSecondary }]}>
           📅 {formatDate(item.Tarih)}
         </Text>
         {item.Aciklama && (
-          <Text 
-            style={[styles.examDescription, { color: theme.muted }]} 
+          <Text
+            style={[styles.examDescription, { color: theme.muted }]}
             numberOfLines={1}
             ellipsizeMode="tail"
           >
@@ -163,11 +164,11 @@ const ExamsList = () => {
           <TouchableOpacity style={styles.menuButton} onPress={openMenu}>
             <Text style={[styles.menuIcon, { color: theme.text }]}>☰</Text>
           </TouchableOpacity>
-          
+
           <Text style={[styles.headerTitle, { color: theme.text }]}>
             Sınavlarım
           </Text>
-          
+
           <ThemeToggle />
         </View>
 
@@ -187,13 +188,13 @@ const ExamsList = () => {
         <TouchableOpacity style={styles.menuButton} onPress={openMenu}>
           <Text style={[styles.menuIcon, { color: theme.text }]}>☰</Text>
         </TouchableOpacity>
-        
+
         <Text style={[styles.headerTitle, { color: theme.text }]}>
           Sınavlarım
         </Text>
-        
-        <TouchableOpacity 
-          onPress={() => navigation.navigate('ExamAdd')}
+
+        <TouchableOpacity
+          onPress={() => navigation.navigate("ExamAdd")}
           style={styles.addButton}
         >
           <Text style={[styles.addButtonText, { color: theme.text }]}>+</Text>
@@ -202,21 +203,23 @@ const ExamsList = () => {
 
       {exams.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Text style={[styles.emptyIcon, { color: theme.textSecondary }]}>📋</Text>
+          <Text style={[styles.emptyIcon, { color: theme.textSecondary }]}>
+            📋
+          </Text>
           <Text style={[styles.emptyText, { color: theme.text }]}>
             Henüz hiç sınav eklenmemiş
           </Text>
           <TouchableOpacity
             style={[
-              styles.addExamButton, 
-              { 
-                backgroundColor: isDark ? theme.accent : '#007AFF', 
-                opacity: 0.9 
-              }
+              styles.addExamButton,
+              {
+                backgroundColor: isDark ? theme.accent : "#007AFF",
+                opacity: 0.9,
+              },
             ]}
-            onPress={() => navigation.navigate('ExamAdd')}
+            onPress={() => navigation.navigate("ExamAdd")}
           >
-            <Text style={[styles.addExamButtonText, { color: '#fff' }]}>
+            <Text style={[styles.addExamButtonText, { color: "#fff" }]}>
               İlk Sınavı Ekle
             </Text>
           </TouchableOpacity>
@@ -225,7 +228,9 @@ const ExamsList = () => {
         <FlatList
           data={exams}
           renderItem={renderExamItem}
-          keyExtractor={(item, index) => item.id ? item.id.toString() : index.toString()}
+          keyExtractor={(item, index) =>
+            item.id ? item.id.toString() : index.toString()
+          }
           contentContainerStyle={styles.listContent}
           refreshing={refreshing}
           onRefresh={handleRefresh}
@@ -284,15 +289,15 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 12,
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
   examHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 12,
   },
   examTitleContainer: {
@@ -301,21 +306,21 @@ const styles = StyleSheet.create({
   },
   examTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 4,
   },
   examSubtitle: {
     fontSize: 14,
   },
   examBadgeContainer: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
   },
   examBadge: {
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 20,
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   examFooter: {
     marginTop: 8,
@@ -326,12 +331,12 @@ const styles = StyleSheet.create({
   },
   examDescription: {
     fontSize: 13,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
   emptyContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
   emptyIcon: {
@@ -341,7 +346,7 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 18,
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   addExamButton: {
     borderRadius: 12,

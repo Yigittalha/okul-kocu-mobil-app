@@ -1,4 +1,10 @@
-import React, { useContext, useState, useEffect, useCallback, useMemo } from "react";
+import React, {
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import {
   View,
   Text,
@@ -43,32 +49,32 @@ const HomeworksGivenList = () => {
 
       // Öğretmen bilgilerini al
       const teacherResponse = await api.post("/user/info", {});
-      
+
       // TODO: remove before prod
       // console.log("📡 Teacher info response received:", teacherResponse?.status);
       // console.log("📋 Full teacher response data:", teacherResponse?.data);
-      
+
       if (teacherResponse?.data) {
         // TODO: remove before prod
         // console.log("✅ Teacher data received successfully");
         // console.log("🔍 Checking for OgretmenID:", teacherResponse.data.OgretmenID);
-        
+
         if (teacherResponse.data.OgretmenID) {
           setTeacherInfo(teacherResponse.data);
-          
+
           // TODO: remove before prod
           // console.log("📋 Teacher data set:", {
           //   OgretmenID: teacherResponse.data.OgretmenID
           // });
-          
+
           // Ödev listesini al
           // TODO: remove before prod
           // console.log("🚀 Starting to fetch homeworks data...");
           // console.log("🌐 Full API URL will be: https://0ecc9eeb16bb.ngrok-free.app/api/teacher/homeworkget");
           // console.log("📤 Request body:", { OgretmenID: teacherResponse.data.OgretmenID });
-          
+
           const homeworksResponse = await api.post("/teacher/homeworkget", {
-            OgretmenID: teacherResponse.data.OgretmenID
+            OgretmenID: teacherResponse.data.OgretmenID,
           });
 
           // TODO: remove before prod
@@ -80,14 +86,14 @@ const HomeworksGivenList = () => {
             // TODO: remove before prod
             // console.log("✅ Homeworks data fetched successfully!");
             // console.log("📋 Found", homeworksResponse.data.length, "homework items");
-            
+
             // Ödevleri tarihe göre sırala (en yeni üstte)
             const sortedHomeworks = homeworksResponse.data.sort((a, b) => {
               const dateA = new Date(a.tarih);
               const dateB = new Date(b.tarih);
               return dateB - dateA; // En yeni tarih üstte
             });
-            
+
             setHomeworksList(sortedHomeworks);
           } else {
             // TODO: remove before prod
@@ -98,8 +104,10 @@ const HomeworksGivenList = () => {
           // TODO: remove before prod
           // console.log("⚠️ OgretmenID is missing from teacher data");
           // console.log("📋 Available teacher data fields:", Object.keys(teacherResponse.data));
-          setError("Öğretmen ID bilgisi bulunamadı. Lütfen tekrar giriş yapın.");
-          
+          setError(
+            "Öğretmen ID bilgisi bulunamadı. Lütfen tekrar giriş yapın.",
+          );
+
           // Oturumu sonlandır
           setTimeout(() => {
             clearSession();
@@ -109,7 +117,7 @@ const HomeworksGivenList = () => {
         // TODO: remove before prod
         // console.log("⚠️ No teacher data received from API");
         setError("Öğretmen bilgileri alınamadı. Lütfen tekrar giriş yapın.");
-        
+
         // Oturumu sonlandır
         setTimeout(() => {
           clearSession();
@@ -128,12 +136,12 @@ const HomeworksGivenList = () => {
       } else {
         // console.log("❌ Error setting up request:", error.message);
       }
-      
+
       if (error.response?.status === 401) {
         // TODO: remove before prod
         // console.log("🔐 Authorization error - clearing session");
         clearSession();
-        navigation.navigate('Login');
+        navigation.navigate("Login");
       } else {
         setError("Ödev listesi alınırken bir hata oluştu: " + error.message);
       }
@@ -150,7 +158,7 @@ const HomeworksGivenList = () => {
 
   const formatDate = (dateString) => {
     if (!dateString) return "Belirtilmemiş";
-    return new Date(dateString).toISOString().split('T')[0]; // YYYY-MM-DD format
+    return new Date(dateString).toISOString().split("T")[0]; // YYYY-MM-DD format
   };
 
   const getScopeText = (homework) => {
@@ -170,67 +178,82 @@ const HomeworksGivenList = () => {
   };
 
   const navigateToDetail = (homework) => {
-    navigation.navigate('HomeworkGivenDetail', { 
+    navigation.navigate("HomeworkGivenDetail", {
       homework,
       onDelete: () => {
         // Silme işlemi sonrası listeyi yenile
         fetchTeacherHomeworks();
-      }
+      },
     });
   };
 
   // Memoized render item for FlatList performance
-  const renderItem = useCallback(({ item, index }) => (
-    <TouchableOpacity
-      style={[styles.homeworkCard, { backgroundColor: theme.card }]}
-      onPress={() => navigateToDetail(item)}
-    >
-      <View style={styles.homeworkHeader}>
-        <View style={styles.subjectContainer}>
-          <Text style={[styles.subjectText, { color: theme.text }]} numberOfLines={1}>
-            📖 {item.DersAdi}
-          </Text>
-          <Text style={[styles.topicText, { color: theme.textSecondary }]} numberOfLines={2}>
-            {item.Konu}
-          </Text>
-        </View>
-        <View style={styles.scopeContainer}>
-          <Text style={[styles.scopeText, { color: getScopeColor(item) }]}>
-            {getScopeText(item)}
-          </Text>
-        </View>
-      </View>
-
-      <View style={styles.homeworkFooter}>
-        <View style={styles.dateContainer}>
-          <Text style={[styles.dateLabel, { color: theme.muted }]}>
-            Teslim Tarihi:
-          </Text>
-          <Text style={[styles.dateText, { color: theme.text }]}>
-            {formatDate(item.TeslimTarihi)}
-          </Text>
-        </View>
-
-        {item.Fotograf && (
-          <View style={styles.photoIndicator}>
-            <Text style={[styles.photoText, { color: theme.accent }]}>
-              📷 Fotoğraf Var
+  const renderItem = useCallback(
+    ({ item, index }) => (
+      <TouchableOpacity
+        style={[styles.homeworkCard, { backgroundColor: theme.card }]}
+        onPress={() => navigateToDetail(item)}
+      >
+        <View style={styles.homeworkHeader}>
+          <View style={styles.subjectContainer}>
+            <Text
+              style={[styles.subjectText, { color: theme.text }]}
+              numberOfLines={1}
+            >
+              📖 {item.DersAdi}
+            </Text>
+            <Text
+              style={[styles.topicText, { color: theme.textSecondary }]}
+              numberOfLines={2}
+            >
+              {item.Konu}
             </Text>
           </View>
-        )}
-      </View>
-    </TouchableOpacity>
-  ), [theme]);
+          <View style={styles.scopeContainer}>
+            <Text style={[styles.scopeText, { color: getScopeColor(item) }]}>
+              {getScopeText(item)}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.homeworkFooter}>
+          <View style={styles.dateContainer}>
+            <Text style={[styles.dateLabel, { color: theme.muted }]}>
+              Teslim Tarihi:
+            </Text>
+            <Text style={[styles.dateText, { color: theme.text }]}>
+              {formatDate(item.TeslimTarihi)}
+            </Text>
+          </View>
+
+          {item.Fotograf && (
+            <View style={styles.photoIndicator}>
+              <Text style={[styles.photoText, { color: theme.accent }]}>
+                📷 Fotoğraf Var
+              </Text>
+            </View>
+          )}
+        </View>
+      </TouchableOpacity>
+    ),
+    [theme],
+  );
 
   // Memoized key extractor
-  const keyExtractor = useCallback((item) => item.id?.toString() || Math.random().toString(), []);
+  const keyExtractor = useCallback(
+    (item) => item.id?.toString() || Math.random().toString(),
+    [],
+  );
 
   // Memoized getItemLayout for FlatList performance
-  const getItemLayout = useCallback((data, index) => ({
-    length: 120, // Approximate height of each item
-    offset: 120 * index,
-    index,
-  }), []);
+  const getItemLayout = useCallback(
+    (data, index) => ({
+      length: 120, // Approximate height of each item
+      offset: 120 * index,
+      index,
+    }),
+    [],
+  );
 
   if (loading) {
     return (
@@ -261,19 +284,19 @@ const HomeworksGivenList = () => {
         <TouchableOpacity style={styles.menuButton} onPress={openMenu}>
           <Text style={[styles.menuIcon, { color: theme.text }]}>☰</Text>
         </TouchableOpacity>
-        
+
         <Text style={[styles.headerTitle, { color: theme.text }]}>
           Verdiğim Ödevler
         </Text>
-        
+
         <View style={styles.headerRight}>
           <TouchableOpacity
             style={[styles.refreshButton, { backgroundColor: theme.accent }]}
             onPress={handleRefresh}
             disabled={refreshing}
           >
-            <Text style={[styles.refreshButtonText, { color: '#fff' }]}>
-              {refreshing ? '⏳' : '🔄'} Yenile
+            <Text style={[styles.refreshButtonText, { color: "#fff" }]}>
+              {refreshing ? "⏳" : "🔄"} Yenile
             </Text>
           </TouchableOpacity>
           <ThemeToggle />
@@ -289,7 +312,7 @@ const HomeworksGivenList = () => {
             style={[styles.retryButton, { backgroundColor: theme.accent }]}
             onPress={fetchTeacherHomeworks}
           >
-            <Text style={[styles.retryButtonText, { color: '#fff' }]}>
+            <Text style={[styles.retryButtonText, { color: "#fff" }]}>
               Tekrar Dene
             </Text>
           </TouchableOpacity>
@@ -324,9 +347,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 20,
     paddingTop: 60,
     paddingBottom: 20,
@@ -337,17 +360,17 @@ const styles = StyleSheet.create({
   },
   menuIcon: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     flex: 1,
-    textAlign: 'center',
+    textAlign: "center",
   },
   headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   refreshButton: {
     paddingHorizontal: 12,
@@ -357,12 +380,12 @@ const styles = StyleSheet.create({
   },
   refreshButtonText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   loadingText: {
     marginTop: 16,
@@ -372,12 +395,12 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 20,
     margin: 16,
-    alignItems: 'center',
+    alignItems: "center",
   },
   errorText: {
     fontSize: 16,
     marginBottom: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
   retryButton: {
     paddingHorizontal: 20,
@@ -386,7 +409,7 @@ const styles = StyleSheet.create({
   },
   retryButtonText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   listContent: {
     padding: 16,
@@ -394,26 +417,26 @@ const styles = StyleSheet.create({
   emptyCard: {
     borderRadius: 12,
     padding: 40,
-    alignItems: 'center',
+    alignItems: "center",
   },
   emptyText: {
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
   homeworkCard: {
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
   homeworkHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     marginBottom: 12,
   },
   subjectContainer: {
@@ -421,24 +444,24 @@ const styles = StyleSheet.create({
   },
   subjectText: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 4,
   },
   topicText: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   scopeContainer: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
   },
   scopeText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   homeworkFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   dateContainer: {
     flex: 1,
@@ -449,15 +472,15 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   photoIndicator: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
   },
   photoText: {
     fontSize: 12,
-    fontWeight: '500',
+    fontWeight: "500",
   },
 });
 
-export default HomeworksGivenList; 
+export default HomeworksGivenList;

@@ -39,7 +39,7 @@ const TeacherDashboard = () => {
         setError(null); // Hata durumunu temizle
       } else {
         setError("Kullanıcı bilgileri alınamadı. Lütfen tekrar giriş yapın.");
-        
+
         // Oturumu sonlandır
         setTimeout(() => {
           clearSession();
@@ -47,7 +47,7 @@ const TeacherDashboard = () => {
       }
     } catch (error) {
       setError("Sistem hatası oluştu. Lütfen tekrar giriş yapın.");
-      
+
       // Oturumu sonlandır
       setTimeout(() => {
         clearSession();
@@ -126,9 +126,7 @@ const TeacherDashboard = () => {
       <View
         style={[styles.loadingContainer, { backgroundColor: theme.background }]}
       >
-        <Text style={[styles.errorText, { color: theme.danger }]}>
-          {error}
-        </Text>
+        <Text style={[styles.errorText, { color: theme.danger }]}>{error}</Text>
       </View>
     );
   }

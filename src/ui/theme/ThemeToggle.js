@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -6,10 +6,10 @@ import {
   Animated,
   Easing,
   Pressable,
-} from 'react-native';
-import { useTheme } from '../../state/theme';
-import { Feather } from '@expo/vector-icons';
-import { darkClassic } from '../../constants/colors';
+} from "react-native";
+import { useTheme } from "../../state/theme";
+import { Feather } from "@expo/vector-icons";
+import { darkClassic } from "../../constants/colors";
 
 /**
  * Aydınlık/Karanlık tema geçişi için kullanılan bileşen
@@ -17,11 +17,11 @@ import { darkClassic } from '../../constants/colors';
  */
 const ThemeToggle = ({ size = 40 }) => {
   const { isDark, toggleTheme } = useTheme();
-  
+
   // Animasyon için kullanılan referanslar
   const switchAnim = useRef(new Animated.Value(isDark ? 1 : 0)).current;
   const knobScale = useRef(new Animated.Value(1)).current;
-  
+
   // Tema değişikliği olduğunda animasyonu güncelle
   useEffect(() => {
     Animated.timing(switchAnim, {
@@ -31,7 +31,7 @@ const ThemeToggle = ({ size = 40 }) => {
       useNativeDriver: false,
     }).start();
   }, [isDark]);
-  
+
   // Basıldığında hafif bir ölçeklendirme animasyonu ekle
   const handlePressIn = () => {
     Animated.spring(knobScale, {
@@ -39,7 +39,7 @@ const ThemeToggle = ({ size = 40 }) => {
       useNativeDriver: false,
     }).start();
   };
-  
+
   const handlePressOut = () => {
     Animated.spring(knobScale, {
       toValue: 1,
@@ -48,29 +48,29 @@ const ThemeToggle = ({ size = 40 }) => {
       useNativeDriver: false,
     }).start();
   };
-  
+
   // Düğme genişliği için hesaplama
   const width = size * 2;
   const knobSize = size * 0.8;
-  
+
   // Animasyon değerlerine dayalı interpolasyonlar
   const translateX = switchAnim.interpolate({
     inputRange: [0, 1],
     outputRange: [4, width - knobSize - 4],
   });
-  
+
   const trackBgColor = switchAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ['#f0f0f0', darkClassic.card],
+    outputRange: ["#f0f0f0", darkClassic.card],
   });
-  
+
   const knobColor = switchAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ['#ffffff', darkClassic.surface],
+    outputRange: ["#ffffff", darkClassic.surface],
   });
-  
+
   const scale = Animated.multiply(knobScale, 1);
-  
+
   return (
     <Pressable
       onPressIn={handlePressIn}
@@ -81,19 +81,19 @@ const ThemeToggle = ({ size = 40 }) => {
       accessibilityLabel={isDark ? "Aydınlık moda geç" : "Karanlık moda geç"}
       style={styles.pressable}
     >
-      <Animated.View 
+      <Animated.View
         style={[
-          styles.track, 
-          { 
+          styles.track,
+          {
             backgroundColor: trackBgColor,
             width,
             height: size,
-            borderRadius: size / 2
-          }
+            borderRadius: size / 2,
+          },
         ]}
       >
         {/* Knob ve içindeki güneş/ay ikonu */}
-        <Animated.View 
+        <Animated.View
           style={[
             styles.knob,
             {
@@ -101,35 +101,35 @@ const ThemeToggle = ({ size = 40 }) => {
               height: knobSize,
               borderRadius: knobSize / 2,
               backgroundColor: knobColor,
-              transform: [{ translateX }, { scale }]
-            }
+              transform: [{ translateX }, { scale }],
+            },
           ]}
         >
           {/* Aydınlık mod ikonu (güneş) */}
-          <Animated.View 
+          <Animated.View
             style={[
               styles.iconContainer,
-              { 
+              {
                 opacity: switchAnim.interpolate({
                   inputRange: [0, 0.5, 1],
                   outputRange: [1, 0, 0],
-                }) 
-              }
+                }),
+              },
             ]}
           >
             <Feather name="sun" size={knobSize * 0.6} color="#F59E0B" />
           </Animated.View>
-          
+
           {/* Karanlık mod ikonu (ay) */}
-          <Animated.View 
+          <Animated.View
             style={[
               styles.iconContainer,
-              { 
+              {
                 opacity: switchAnim.interpolate({
                   inputRange: [0, 0.5, 1],
                   outputRange: [0, 0, 1],
-                }) 
-              }
+                }),
+              },
             ]}
           >
             <Feather name="moon" size={knobSize * 0.55} color="#E6E8EB" />
@@ -143,36 +143,36 @@ const ThemeToggle = ({ size = 40 }) => {
 const styles = StyleSheet.create({
   pressable: {
     padding: 6, // Daha geniş bir dokunma alanı
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   track: {
-    justifyContent: 'center',
+    justifyContent: "center",
     // Gölge efekti
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 1.5,
     elevation: 2,
   },
   knob: {
-    position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
+    position: "absolute",
+    justifyContent: "center",
+    alignItems: "center",
     // Gölge efekti
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.3,
     shadowRadius: 2,
     elevation: 3,
   },
   iconContainer: {
-    position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    height: '100%',
+    position: "absolute",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "100%",
   },
 });
 
-export default ThemeToggle; 
+export default ThemeToggle;

@@ -1,5 +1,9 @@
 import React, { useContext } from "react";
-import { NavigationContainer, DefaultTheme, DarkTheme } from "@react-navigation/native";
+import {
+  NavigationContainer,
+  DefaultTheme,
+  DarkTheme,
+} from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { SessionContext } from "../state/session";
 import SchoolSelect from "../app/auth/SchoolSelect";

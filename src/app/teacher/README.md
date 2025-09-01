@@ -20,9 +20,9 @@ Bu klasörde öğretmenlerin yoklama işlemlerini yürütmeleri için gerekli ek
 - Dönüş formatı:
   ```json
   [
-    {"SinifKodu":"0001","SinifAdi":"5-A","Derslik":"0001","Devre":"5"},
-    {"SinifKodu":"0002","SinifAdi":"5-B","Derslik":"0002","Devre":"5"},
-    {"SinifKodu":"0003","SinifAdi":"5-C","Derslik":"0003","Devre":"5"}
+    { "SinifKodu": "0001", "SinifAdi": "5-A", "Derslik": "0001", "Devre": "5" },
+    { "SinifKodu": "0002", "SinifAdi": "5-B", "Derslik": "0002", "Devre": "5" },
+    { "SinifKodu": "0003", "SinifAdi": "5-C", "Derslik": "0003", "Devre": "5" }
   ]
   ```
 
@@ -48,4 +48,4 @@ const formatDateYYYYMMDD = (date) => {
 
 ### Navigasyon
 
-Bu ekran, hem admin hem de öğretmen menülerinde "✅ Yoklama" seçeneği ile erişilebilir. Veli menüsünde bu seçenek bulunmamaktadır. 
+Bu ekran, hem admin hem de öğretmen menülerinde "✅ Yoklama" seçeneği ile erişilebilir. Veli menüsünde bu seçenek bulunmamaktadır.

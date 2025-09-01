@@ -59,10 +59,22 @@ export default function AppDrawer() {
           <Stack.Screen name="TeachersList" component={TeachersList} />
           <Stack.Screen name="StudentsList" component={StudentsList} />
           <Stack.Screen name="AttendanceStart" component={AttendanceStart} />
-          <Stack.Screen name="AttendanceResults" component={AttendanceResults} />
-          <Stack.Screen name="HomeworkAssignment" component={HomeworkAssignment} />
-          <Stack.Screen name="HomeworksGivenList" component={HomeworksGivenList} />
-          <Stack.Screen name="HomeworkGivenDetail" component={HomeworkGivenDetail} />
+          <Stack.Screen
+            name="AttendanceResults"
+            component={AttendanceResults}
+          />
+          <Stack.Screen
+            name="HomeworkAssignment"
+            component={HomeworkAssignment}
+          />
+          <Stack.Screen
+            name="HomeworksGivenList"
+            component={HomeworksGivenList}
+          />
+          <Stack.Screen
+            name="HomeworkGivenDetail"
+            component={HomeworkGivenDetail}
+          />
           <Stack.Screen name="ExamAdd" component={ExamAdd} />
           <Stack.Screen name="ExamsList" component={ExamsList} />
           <Stack.Screen name="ExamDetail" component={ExamDetail} />
@@ -71,8 +83,14 @@ export default function AppDrawer() {
       {role === "parent" && (
         <>
           <Stack.Screen name="ParentDashboard" component={ParentDashboard} />
-          <Stack.Screen name="StudentHomeworkList" component={StudentHomeworkList} />
-          <Stack.Screen name="StudentHomeworkDetail" component={StudentHomeworkDetail} />
+          <Stack.Screen
+            name="StudentHomeworkList"
+            component={StudentHomeworkList}
+          />
+          <Stack.Screen
+            name="StudentHomeworkDetail"
+            component={StudentHomeworkDetail}
+          />
           <Stack.Screen name="StudentAbsences" component={StudentAbsences} />
         </>
       )}

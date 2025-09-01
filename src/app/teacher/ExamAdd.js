@@ -44,10 +44,10 @@ const ExamAdd = () => {
 
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showClassModal, setShowClassModal] = useState(false);
-  const [sinif, setSinif] = useState(''); // Controlled value for class selection
-  
+  const [sinif, setSinif] = useState(""); // Controlled value for class selection
+
   // Screen dimensions for responsive dropdown
-  const { height } = Dimensions.get('window');
+  const { height } = Dimensions.get("window");
   const MAX_DROPDOWN_HEIGHT = Math.floor(height * 0.5);
 
   // Sayfa yükleme ve veri çekme
@@ -55,40 +55,40 @@ const ExamAdd = () => {
     const loadPageData = async () => {
       try {
         setLoading(true);
-        
+
         // Kullanıcı bilgilerini çek
         const userInfo = await fetchUserInfo(true);
-        
+
         if (!userInfo || !userInfo.OgretmenID) {
           Alert.alert(
             "Hata",
             "Öğretmen bilgileri alınamadı. Lütfen tekrar giriş yapın.",
-            [{ text: "Tamam", onPress: () => clearSession() }]
+            [{ text: "Tamam", onPress: () => clearSession() }],
           );
           return;
         }
 
         setUserData(userInfo);
-        
+
         // Sınıf listesini çek
         const classes = await fetchAllClasses(true);
         setClassList(classes);
-        
+
         // İlk sınıfı varsayılan olarak seç (opsiyonel)
         if (classes.length > 0) {
-          setExamData(prev => ({
+          setExamData((prev) => ({
             ...prev,
             Sinif: classes[0].SinifAdi,
-            OgretmenID: userInfo.OgretmenID
+            OgretmenID: userInfo.OgretmenID,
           }));
           setSinif(classes[0].SinifAdi); // Update controlled state
         }
       } catch (error) {
         console.error("Sayfa verileri yüklenirken hata:", error);
         Alert.alert(
-          "Hata", 
+          "Hata",
           "Sayfa verileri yüklenemedi. Lütfen daha sonra tekrar deneyin.",
-          [{ text: "Tamam", onPress: () => navigation.goBack() }]
+          [{ text: "Tamam", onPress: () => navigation.goBack() }],
         );
       } finally {
         setLoading(false);
@@ -99,42 +99,48 @@ const ExamAdd = () => {
   }, []);
 
   const handleInputChange = (key, value) => {
-    setExamData(prev => ({
+    setExamData((prev) => ({
       ...prev,
-      [key]: value
+      [key]: value,
     }));
   };
 
   const handleDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || examData.Tarih;
-    setShowDatePicker(Platform.OS === 'ios');
-    setExamData(prev => ({
+    setShowDatePicker(Platform.OS === "ios");
+    setExamData((prev) => ({
       ...prev,
-      Tarih: currentDate
+      Tarih: currentDate,
     }));
   };
 
   const formatDate = (date) => {
-    return date.toISOString().split('T')[0];
+    return date.toISOString().split("T")[0];
   };
 
   const handleSelectClass = (selectedClass) => {
-    setExamData(prev => ({ ...prev, Sinif: selectedClass }));
+    setExamData((prev) => ({ ...prev, Sinif: selectedClass }));
     setSinif(selectedClass); // Update controlled state
     setShowClassModal(false);
   };
 
   const handleSubmit = async () => {
     // Zorunlu alan kontrolü
-    const requiredFields = ['Tarih', 'SinavSuresi', 'Ders', 'Sinif', 'SinavAdi'];
-    const missingFields = requiredFields.filter(field => !examData[field]);
+    const requiredFields = [
+      "Tarih",
+      "SinavSuresi",
+      "Ders",
+      "Sinif",
+      "SinavAdi",
+    ];
+    const missingFields = requiredFields.filter((field) => !examData[field]);
 
     // Öğretmen ID kontrolü
     if (!userData || !userData.OgretmenID) {
       Alert.alert(
         "Hata",
         "Öğretmen bilgileri alınamadı. Lütfen tekrar giriş yapın.",
-        [{ text: "Tamam", onPress: () => clearSession() }]
+        [{ text: "Tamam", onPress: () => clearSession() }],
       );
       return;
     }
@@ -142,7 +148,7 @@ const ExamAdd = () => {
     if (missingFields.length > 0) {
       Alert.alert(
         "Eksik Bilgi",
-        `Lütfen şu alanları doldurun: ${missingFields.join(', ')}`
+        `Lütfen şu alanları doldurun: ${missingFields.join(", ")}`,
       );
       return;
     }
@@ -152,21 +158,19 @@ const ExamAdd = () => {
         ...examData,
         Tarih: formatDate(examData.Tarih),
         Puan: "",
-        OgretmenID: userData.OgretmenID
+        OgretmenID: userData.OgretmenID,
       };
 
       const response = await addExam(submitData);
-      
-      Alert.alert(
-        "Başarılı",
-        "Sınav başarıyla eklendi!",
-        [{ text: "Tamam", onPress: () => navigation.goBack() }]
-      );
+
+      Alert.alert("Başarılı", "Sınav başarıyla eklendi!", [
+        { text: "Tamam", onPress: () => navigation.goBack() },
+      ]);
     } catch (error) {
       console.error("Sınav ekleme hatası:", error);
       Alert.alert(
         "Hata",
-        "Sınav eklenirken bir sorun oluştu. Lütfen tekrar deneyin."
+        "Sınav eklenirken bir sorun oluştu. Lütfen tekrar deneyin.",
       );
     }
   };
@@ -174,9 +178,20 @@ const ExamAdd = () => {
   // Yükleme durumunda gösterilecek ekran
   if (loading) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.background, justifyContent: 'center', alignItems: 'center' }]}>
+      <View
+        style={[
+          styles.container,
+          {
+            backgroundColor: theme.background,
+            justifyContent: "center",
+            alignItems: "center",
+          },
+        ]}
+      >
         <ActivityIndicator size="large" color={theme.accent} />
-        <Text style={[styles.loadingText, { color: theme.text, marginTop: 16 }]}>
+        <Text
+          style={[styles.loadingText, { color: theme.text, marginTop: 16 }]}
+        >
           Veriler yükleniyor...
         </Text>
       </View>
@@ -200,7 +215,7 @@ const ExamAdd = () => {
         <ThemeToggle />
       </View>
 
-      <ScrollView 
+      <ScrollView
         style={styles.content}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -208,55 +223,71 @@ const ExamAdd = () => {
         <View style={[styles.inputContainer, { backgroundColor: theme.card }]}>
           <Text style={[styles.label, { color: theme.text }]}>Sınav Adı *</Text>
           <TextInput
-            style={[styles.input, { color: theme.text, borderColor: theme.border }]}
+            style={[
+              styles.input,
+              { color: theme.text, borderColor: theme.border },
+            ]}
             value={examData.SinavAdi}
-            onChangeText={(text) => handleInputChange('SinavAdi', text)}
+            onChangeText={(text) => handleInputChange("SinavAdi", text)}
             placeholder="Vize, Final, Ara Sınav"
             placeholderTextColor={theme.textSecondary}
           />
 
           <Text style={[styles.label, { color: theme.text }]}>Ders *</Text>
           <TextInput
-            style={[styles.input, { color: theme.text, borderColor: theme.border }]}
+            style={[
+              styles.input,
+              { color: theme.text, borderColor: theme.border },
+            ]}
             value={examData.Ders}
-            onChangeText={(text) => handleInputChange('Ders', text)}
+            onChangeText={(text) => handleInputChange("Ders", text)}
             placeholder="Matematik, Türkçe, Fen Bilgisi"
             placeholderTextColor={theme.textSecondary}
           />
 
           <Text style={[styles.label, { color: theme.text }]}>Sınıf *</Text>
           <TouchableOpacity
-            style={[styles.classSelectButton, {
-              backgroundColor: theme.card,
-              borderColor: theme.border
-            }]}
+            style={[
+              styles.classSelectButton,
+              {
+                backgroundColor: theme.card,
+                borderColor: theme.border,
+              },
+            ]}
             onPress={() => setShowClassModal(true)}
           >
-            <Text style={[
-              styles.classSelectText,
-              {
-                color: sinif ? (isDark ? '#E6EDF3' : '#0D1B2A') : '#7C8DA6'
-              }
-            ]}>
+            <Text
+              style={[
+                styles.classSelectText,
+                {
+                  color: sinif ? (isDark ? "#E6EDF3" : "#0D1B2A") : "#7C8DA6",
+                },
+              ]}
+            >
               {sinif || "Sınıf seçin..."}
             </Text>
-            <Text style={[styles.dropdownIcon, { color: '#7C8DA6' }]}>
-              ▼
-            </Text>
+            <Text style={[styles.dropdownIcon, { color: "#7C8DA6" }]}>▼</Text>
           </TouchableOpacity>
 
-          <Text style={[styles.label, { color: theme.text }]}>Sınav Süresi (dakika) *</Text>
+          <Text style={[styles.label, { color: theme.text }]}>
+            Sınav Süresi (dakika) *
+          </Text>
           <TextInput
-            style={[styles.input, { color: theme.text, borderColor: theme.border }]}
+            style={[
+              styles.input,
+              { color: theme.text, borderColor: theme.border },
+            ]}
             value={examData.SinavSuresi}
-            onChangeText={(text) => handleInputChange('SinavSuresi', text)}
+            onChangeText={(text) => handleInputChange("SinavSuresi", text)}
             placeholder="60"
             keyboardType="numeric"
             placeholderTextColor={theme.textSecondary}
           />
 
-          <Text style={[styles.label, { color: theme.text }]}>Sınav Tarihi *</Text>
-          <TouchableOpacity 
+          <Text style={[styles.label, { color: theme.text }]}>
+            Sınav Tarihi *
+          </Text>
+          <TouchableOpacity
             style={[styles.dateInput, { borderColor: theme.border }]}
             onPress={() => setShowDatePicker(true)}
           >
@@ -279,15 +310,15 @@ const ExamAdd = () => {
           <Text style={[styles.label, { color: theme.text }]}>Açıklama</Text>
           <TextInput
             style={[
-              styles.input, 
-              styles.textArea, 
-              { 
-                color: theme.text, 
-                borderColor: theme.border 
-              }
+              styles.input,
+              styles.textArea,
+              {
+                color: theme.text,
+                borderColor: theme.border,
+              },
             ]}
             value={examData.Aciklama}
-            onChangeText={(text) => handleInputChange('Aciklama', text)}
+            onChangeText={(text) => handleInputChange("Aciklama", text)}
             placeholder="Sınav hakkında detaylı açıklama"
             placeholderTextColor={theme.textSecondary}
             multiline
@@ -296,15 +327,15 @@ const ExamAdd = () => {
 
           <TouchableOpacity
             style={[
-              styles.submitButton, 
-              { 
-                backgroundColor: isDark ? theme.accent : '#007AFF', 
-                opacity: 0.9 
-              }
+              styles.submitButton,
+              {
+                backgroundColor: isDark ? theme.accent : "#007AFF",
+                opacity: 0.9,
+              },
             ]}
             onPress={handleSubmit}
           >
-            <Text style={[styles.submitButtonText, { color: '#fff' }]}>
+            <Text style={[styles.submitButtonText, { color: "#fff" }]}>
               Sınavı Kaydet
             </Text>
           </TouchableOpacity>
@@ -319,16 +350,23 @@ const ExamAdd = () => {
         onRequestClose={() => setShowClassModal(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={[styles.modalContent, { 
-            backgroundColor: '#11263A', 
-            borderColor: 'rgba(230,237,243,0.08)',
-            zIndex: 999,
-            elevation: 8
-          }]}>
-            <Text style={[styles.modalTitle, { color: '#E6EDF3' }]}>Sınıf Seç</Text>
+          <View
+            style={[
+              styles.modalContent,
+              {
+                backgroundColor: "#11263A",
+                borderColor: "rgba(230,237,243,0.08)",
+                zIndex: 999,
+                elevation: 8,
+              },
+            ]}
+          >
+            <Text style={[styles.modalTitle, { color: "#E6EDF3" }]}>
+              Sınıf Seç
+            </Text>
             {classList.length === 0 ? (
               <View style={styles.emptyState}>
-                <Text style={[styles.emptyStateText, { color: '#7C8DA6' }]}>
+                <Text style={[styles.emptyStateText, { color: "#7C8DA6" }]}>
                   Sınıf bulunamadı
                 </Text>
               </View>
@@ -343,35 +381,29 @@ const ExamAdd = () => {
                   <TouchableOpacity
                     activeOpacity={0.7}
                     style={[
-                      styles.classItem, 
-                      { 
-                        backgroundColor: '#11263A',
-                        borderColor: 'rgba(230,237,243,0.08)',
+                      styles.classItem,
+                      {
+                        backgroundColor: "#11263A",
+                        borderColor: "rgba(230,237,243,0.08)",
                         minHeight: 44,
                         paddingVertical: 8,
                         paddingHorizontal: 14,
-                      }
+                      },
                     ]}
                     onPress={() => handleSelectClass(item.SinifAdi)}
                   >
-                    <Text style={[
-                      styles.classItemText, 
-                      { color: '#E6EDF3' }
-                    ]}>
+                    <Text style={[styles.classItemText, { color: "#E6EDF3" }]}>
                       {item.SinifAdi}
                     </Text>
                   </TouchableOpacity>
                 )}
               />
             )}
-            <TouchableOpacity 
-              style={[
-                styles.closeModalButton, 
-                { backgroundColor: '#FFD60A' }
-              ]}
+            <TouchableOpacity
+              style={[styles.closeModalButton, { backgroundColor: "#FFD60A" }]}
               onPress={() => setShowClassModal(false)}
             >
-              <Text style={[styles.closeModalButtonText, { color: '#0D1B2A' }]}>
+              <Text style={[styles.closeModalButtonText, { color: "#0D1B2A" }]}>
                 Kapat
               </Text>
             </TouchableOpacity>
@@ -431,7 +463,7 @@ const styles = StyleSheet.create({
   },
   textArea: {
     height: 120,
-    textAlignVertical: 'top',
+    textAlignVertical: "top",
   },
   dateInput: {
     borderWidth: 1,
@@ -458,9 +490,9 @@ const styles = StyleSheet.create({
   },
   // Yeni eklenen stiller
   classSelectButton: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 15,
@@ -484,31 +516,31 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
     zIndex: 999,
   },
   modalContent: {
-    width: '70%',
+    width: "70%",
     borderRadius: 12,
     padding: 20,
-    maxHeight: '70%',
+    maxHeight: "70%",
     borderWidth: 1,
   },
   emptyState: {
     paddingVertical: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   emptyStateText: {
     fontSize: 16,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   classItem: {
     paddingVertical: 15,
@@ -518,18 +550,18 @@ const styles = StyleSheet.create({
   },
   classItemText: {
     fontSize: 16,
-    color: '#fff', // Metin rengini beyaz yap
+    color: "#fff", // Metin rengini beyaz yap
   },
   closeModalButton: {
     marginTop: 20,
     borderRadius: 12,
     paddingVertical: 15,
-    alignItems: 'center',
+    alignItems: "center",
   },
   closeModalButtonText: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#fff',
+    fontWeight: "bold",
+    color: "#fff",
   },
 });
 

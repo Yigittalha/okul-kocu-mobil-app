@@ -43,7 +43,7 @@ const ParentDashboard = () => {
         setError(null); // Hata durumunu temizle
       } else {
         setError("Öğrenci bilgileri alınamadı. Lütfen tekrar giriş yapın.");
-        
+
         // Oturumu sonlandır
         setTimeout(() => {
           clearSession();
@@ -51,7 +51,7 @@ const ParentDashboard = () => {
       }
     } catch (error) {
       setError("Sistem hatası oluştu. Lütfen tekrar giriş yapın.");
-      
+
       // Oturumu sonlandır
       setTimeout(() => {
         clearSession();
@@ -124,9 +124,7 @@ const ParentDashboard = () => {
       <View
         style={[styles.loadingContainer, { backgroundColor: theme.background }]}
       >
-        <Text style={[styles.errorText, { color: theme.danger }]}>
-          {error}
-        </Text>
+        <Text style={[styles.errorText, { color: theme.danger }]}>{error}</Text>
       </View>
     );
   }
@@ -389,21 +387,26 @@ const ParentDashboard = () => {
         {/* Homework Button */}
         <TouchableOpacity
           style={[styles.homeworkButton, { backgroundColor: theme.accent }]}
-          onPress={() => navigation.navigate('StudentHomeworkList')}
+          onPress={() => navigation.navigate("StudentHomeworkList")}
         >
-          <Text style={[styles.homeworkButtonText, { color: '#fff' }]}>
+          <Text style={[styles.homeworkButtonText, { color: "#fff" }]}>
             📚 Ödevlerimi Görüntüle
           </Text>
         </TouchableOpacity>
 
         {/* Absences Button */}
         <TouchableOpacity
-          style={[styles.absencesButton, { 
-            backgroundColor: isDark ? theme.warning : '#FF9500' // Aydınlık modda iOS turuncu
-          }]}
-          onPress={() => navigation.navigate('StudentAbsences', { studentInfo: studentData })}
+          style={[
+            styles.absencesButton,
+            {
+              backgroundColor: isDark ? theme.warning : "#FF9500", // Aydınlık modda iOS turuncu
+            },
+          ]}
+          onPress={() =>
+            navigation.navigate("StudentAbsences", { studentInfo: studentData })
+          }
         >
-          <Text style={[styles.absencesButtonText, { color: '#fff' }]}>
+          <Text style={[styles.absencesButtonText, { color: "#fff" }]}>
             📊 Devamsızlık Geçmişi
           </Text>
         </TouchableOpacity>

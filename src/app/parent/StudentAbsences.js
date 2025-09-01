@@ -42,10 +42,10 @@ const StudentAbsences = () => {
       // Önce geçirilen öğrenci bilgilerini kontrol et
       if (passedStudentInfo && passedStudentInfo.OgrenciId) {
         setStudentInfo(passedStudentInfo);
-        
+
         // Devamsızlık listesini al
         const absencesResponse = await api.post("/student/attendance", {
-          OgrenciID: passedStudentInfo.OgrenciId
+          OgrenciID: passedStudentInfo.OgrenciId,
         });
 
         if (absencesResponse?.data) {
@@ -55,7 +55,7 @@ const StudentAbsences = () => {
             const dateB = new Date(b.tarih);
             return dateB - dateA; // En yeni tarih üstte
           });
-          
+
           setAbsencesList(sortedAbsences);
         } else {
           setAbsencesList([]);
@@ -65,14 +65,14 @@ const StudentAbsences = () => {
 
       // Kullanıcı bilgilerini al (OgrenciId dahil)
       const userResponse = await api.post("/user/info", {});
-      
+
       if (userResponse?.data) {
         if (userResponse.data.OgrenciId) {
           setStudentInfo(userResponse.data);
-          
+
           // Devamsızlık listesini al
           const absencesResponse = await api.post("/student/attendance", {
-            OgrenciID: userResponse.data.OgrenciId
+            OgrenciID: userResponse.data.OgrenciId,
           });
 
           if (absencesResponse?.data) {
@@ -82,14 +82,14 @@ const StudentAbsences = () => {
               const dateB = new Date(b.tarih);
               return dateB - dateA; // En yeni tarih üstte
             });
-            
+
             setAbsencesList(sortedAbsences);
           } else {
             setAbsencesList([]);
           }
         } else {
           setError("Öğrenci ID bilgisi bulunamadı. Lütfen tekrar giriş yapın.");
-          
+
           // Oturumu sonlandır
           setTimeout(() => {
             clearSession();
@@ -97,7 +97,7 @@ const StudentAbsences = () => {
         }
       } else {
         setError("Kullanıcı bilgileri alınamadı. Lütfen tekrar giriş yapın.");
-        
+
         // Oturumu sonlandır
         setTimeout(() => {
           clearSession();
@@ -106,9 +106,11 @@ const StudentAbsences = () => {
     } catch (error) {
       if (error.response?.status === 401) {
         clearSession();
-        navigation.navigate('Login');
+        navigation.navigate("Login");
       } else {
-        setError("Devamsızlık listesi alınırken bir hata oluştu: " + error.message);
+        setError(
+          "Devamsızlık listesi alınırken bir hata oluştu: " + error.message,
+        );
       }
     } finally {
       setLoading(false);
@@ -124,10 +126,10 @@ const StudentAbsences = () => {
   const formatDate = (dateString) => {
     if (!dateString) return "Belirtilmemiş";
     return new Date(dateString).toLocaleDateString("tr-TR", {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      weekday: 'long'
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      weekday: "long",
     });
   };
 
@@ -208,15 +210,15 @@ const StudentAbsences = () => {
         <TouchableOpacity style={styles.menuButton} onPress={openMenu}>
           <Text style={[styles.menuIcon, { color: theme.text }]}>☰</Text>
         </TouchableOpacity>
-        
+
         <Text style={[styles.headerTitle, { color: theme.text }]}>
           Devamsızlık Geçmişi
         </Text>
-        
+
         <ThemeToggle />
       </View>
 
-      <RefreshableScrollView 
+      <RefreshableScrollView
         onRefresh={handleRefresh}
         refreshing={refreshing}
         style={styles.content}
@@ -229,13 +231,16 @@ const StudentAbsences = () => {
               ❌ {error}
             </Text>
             <TouchableOpacity
-              style={[styles.retryButton, { 
-                backgroundColor: isDark ? theme.accent : '#007AFF', // iOS mavi tonu
-                opacity: 0.9
-              }]}
+              style={[
+                styles.retryButton,
+                {
+                  backgroundColor: isDark ? theme.accent : "#007AFF", // iOS mavi tonu
+                  opacity: 0.9,
+                },
+              ]}
               onPress={fetchStudentAbsences}
             >
-              <Text style={[styles.retryButtonText, { color: '#fff' }]}>
+              <Text style={[styles.retryButtonText, { color: "#fff" }]}>
                 Tekrar Dene
               </Text>
             </TouchableOpacity>
@@ -251,12 +256,14 @@ const StudentAbsences = () => {
             <View
               key={absence.tarih + index}
               style={[
-                styles.absenceCard, 
-                { 
+                styles.absenceCard,
+                {
                   backgroundColor: theme.card,
                   borderLeftWidth: isRecentAbsence(absence.tarih) ? 4 : 0,
-                  borderLeftColor: isRecentAbsence(absence.tarih) ? theme.warning : 'transparent'
-                }
+                  borderLeftColor: isRecentAbsence(absence.tarih)
+                    ? theme.warning
+                    : "transparent",
+                },
               ]}
             >
               <View style={styles.absenceHeader}>
@@ -264,13 +271,21 @@ const StudentAbsences = () => {
                   <Text style={[styles.dateText, { color: theme.text }]}>
                     📅 {formatDate(absence.tarih)}
                   </Text>
-                  <Text style={[styles.dayText, { color: theme.textSecondary }]}>
+                  <Text
+                    style={[styles.dayText, { color: theme.textSecondary }]}
+                  >
                     {absence.Gun}
                   </Text>
                 </View>
                 <View style={styles.statusContainer}>
-                  <Text style={[styles.statusText, { color: getStatusColor(absence.durum) }]}>
-                    {getStatusIcon(absence.durum)} {getStatusText(absence.durum)}
+                  <Text
+                    style={[
+                      styles.statusText,
+                      { color: getStatusColor(absence.durum) },
+                    ]}
+                  >
+                    {getStatusIcon(absence.durum)}{" "}
+                    {getStatusText(absence.durum)}
                   </Text>
                 </View>
               </View>
@@ -296,7 +311,12 @@ const StudentAbsences = () => {
               </View>
 
               {isRecentAbsence(absence.tarih) && (
-                <View style={[styles.recentBadge, { backgroundColor: theme.warning + '20' }]}>
+                <View
+                  style={[
+                    styles.recentBadge,
+                    { backgroundColor: theme.warning + "20" },
+                  ]}
+                >
                   <Text style={[styles.recentText, { color: theme.warning }]}>
                     ⏰ Son 7 gün içinde
                   </Text>
@@ -315,9 +335,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 20,
     paddingTop: 60,
     paddingBottom: 20,
@@ -328,11 +348,11 @@ const styles = StyleSheet.create({
   },
   menuIcon: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   content: {
     flex: 1,
@@ -342,8 +362,8 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   loadingText: {
     marginTop: 16,
@@ -353,12 +373,12 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 20,
     marginBottom: 16,
-    alignItems: 'center',
+    alignItems: "center",
   },
   errorText: {
     fontSize: 16,
     marginBottom: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
   retryButton: {
     paddingHorizontal: 20,
@@ -367,31 +387,31 @@ const styles = StyleSheet.create({
   },
   retryButtonText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   emptyCard: {
     borderRadius: 12,
     padding: 40,
-    alignItems: 'center',
+    alignItems: "center",
   },
   emptyText: {
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
   absenceCard: {
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
   absenceHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     marginBottom: 12,
   },
   dateContainer: {
@@ -399,49 +419,49 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 4,
   },
   dayText: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   statusContainer: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
   },
   statusText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   absenceDetails: {
     marginBottom: 8,
   },
   detailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 8,
   },
   detailLabel: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   detailValue: {
     fontSize: 14,
-    fontWeight: '600',
-    textAlign: 'right',
+    fontWeight: "600",
+    textAlign: "right",
     flex: 1,
   },
   recentBadge: {
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 20,
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
   },
   recentText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });
 
-export default StudentAbsences; 
+export default StudentAbsences;

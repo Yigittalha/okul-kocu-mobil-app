@@ -295,7 +295,9 @@ api.interceptors.response.use(
 
     // Handle 401 or token invalid message
     if (isTokenInvalidError) {
-      console.log("Token invalid error - clearing session and redirecting to login");
+      console.log(
+        "Token invalid error - clearing session and redirecting to login",
+      );
 
       // Try refresh token first
       if (!originalRequest._retry) {
@@ -335,19 +337,26 @@ api.interceptors.response.use(
 );
 
 // Student homework API function
-export const fetchStudentHomework = async (ogrenciID, sinif, showErrors = false) => {
+export const fetchStudentHomework = async (
+  ogrenciID,
+  sinif,
+  showErrors = false,
+) => {
   try {
     console.log("🔍 Fetching student homework with:", { ogrenciID, sinif });
     console.log("🌐 Full API URL will be:", `${API_BASE_URL}/student/homework`);
 
     const response = await api.post("/student/homework", {
       OgrenciID: ogrenciID,
-      Sinif: sinif
+      Sinif: sinif,
     });
 
     console.log("📡 API Response received:", response.status);
     console.log("📋 Response data type:", typeof response.data);
-    console.log("📋 Response data length:", Array.isArray(response.data) ? response.data.length : 'Not an array');
+    console.log(
+      "📋 Response data length:",
+      Array.isArray(response.data) ? response.data.length : "Not an array",
+    );
 
     if (response?.data) {
       console.log("✅ Student homework fetched successfully!");
@@ -365,11 +374,14 @@ export const fetchStudentHomework = async (ogrenciID, sinif, showErrors = false)
       console.error("❌ Response data:", error.response.data);
       console.error("❌ Response headers:", error.response.headers);
     } else if (error.request) {
-      console.error("❌ Request was made but no response received:", error.request);
+      console.error(
+        "❌ Request was made but no response received:",
+        error.request,
+      );
     } else {
       console.error("❌ Error setting up request:", error.message);
     }
-    
+
     if (showErrors) {
       throw error;
     } else {
