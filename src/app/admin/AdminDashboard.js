@@ -33,16 +33,12 @@ const AdminDashboard = () => {
 
   const fetchAdminData = async () => {
     try {
-      console.log("🚀 Fetching admin data using fetchUserInfo...");
       const data = await fetchUserInfo(true); // showErrors true olarak ayarlandı
 
       if (data) {
-        console.log("✅ Admin user info fetched successfully!");
-        console.log("📋 Response data:", data);
         setAdminData(data);
         setError(null); // Hata durumunu temizle
       } else {
-        console.log("⚠️ Admin data not returned");
         setError("Kullanıcı bilgileri alınamadı. Lütfen tekrar giriş yapın.");
         // Oturumu sonlandır
         setTimeout(() => {
@@ -50,7 +46,6 @@ const AdminDashboard = () => {
         }, 2000);
       }
     } catch (error) {
-      console.log("❌ Admin data fetch error:", error);
       setError("Sistem hatası oluştu. Lütfen tekrar giriş yapın.");
       
       // Oturumu sonlandır
@@ -65,7 +60,6 @@ const AdminDashboard = () => {
 
   // İlk veriyi çekme işlemi
   useEffect(() => {
-    console.log("🚀 İlk açılışta admin verisini çekiyorum...");
     fetchAdminData();
     // Otomatik döngüsel yenileme kaldırıldı - sadece manuel yenileme aktif
   }, []);
@@ -85,18 +79,11 @@ const AdminDashboard = () => {
 
   const getUserPhotoUrl = () => {
     try {
-      console.log("=== ADMIN PHOTO DEBUG ===");
-      console.log("adminData mevcut mu:", adminData ? "EVET" : "HAYIR");
-
       if (!adminData) {
-        console.log("Admin verisi yok!");
         return null;
       }
 
-      console.log("adminData?.Fotograf:", adminData?.Fotograf);
-
       if (!adminData?.Fotograf) {
-        console.log("!!! FOTO YOK - NULL DÖNÜYORUM !!!");
         return null;
       }
 
@@ -105,23 +92,18 @@ const AdminDashboard = () => {
         typeof adminData.Fotograf !== "string" ||
         adminData.Fotograf.trim() === ""
       ) {
-        console.log("!!! FOTO STRING DEĞİL VEYA BOŞ - NULL DÖNÜYORUM !!!");
         return null;
       }
 
       const photoUrl = getUploadUrl(adminData.Fotograf);
-      console.log("Generated Admin Photo URL:", photoUrl);
-      console.log("=== END ADMIN DEBUG ===");
 
       // URL oluşturulduysa kullan, yoksa null döndür
       if (!photoUrl) {
-        console.log("!!! PHOTO URL OLUŞTURULAMADI !!!");
         return null;
       }
 
       return photoUrl;
     } catch (error) {
-      console.log("!!! HATA OLUŞTU !!!", error);
       return null;
     }
   };

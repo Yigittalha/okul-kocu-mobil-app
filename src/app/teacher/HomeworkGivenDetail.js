@@ -107,14 +107,11 @@ const HomeworkGivenDetail = () => {
     try {
       setDeleting(true);
       
-      console.log("🗑️ Deleting homework with ID:", homework.id);
-      
       const response = await api.post("/teacher/homeworkdelete", {
         id: homework.id
       });
 
       if (response.status === 200) {
-        console.log("✅ Homework deleted successfully");
         Alert.alert(
           "Başarılı",
           "Ödev başarıyla silindi!",
@@ -135,10 +132,7 @@ const HomeworkGivenDetail = () => {
         throw new Error("Silme işlemi başarısız");
       }
     } catch (error) {
-      console.log("❌ Delete homework error:", error);
-      
       if (error.response?.status === 401) {
-        console.log("🔐 Authorization error - clearing session");
         clearSession();
         navigation.navigate('Login');
       } else {

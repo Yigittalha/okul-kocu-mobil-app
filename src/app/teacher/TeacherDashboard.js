@@ -32,16 +32,12 @@ const TeacherDashboard = () => {
 
   const fetchTeacherData = async () => {
     try {
-      console.log("🚀 Fetching teacher data using fetchUserInfo...");
       const data = await fetchUserInfo(true); // showErrors true olarak ayarlandı
 
       if (data) {
-        console.log("✅ Teacher user info fetched successfully!");
-        console.log("📋 Response data:", data);
         setTeacherData(data);
         setError(null); // Hata durumunu temizle
       } else {
-        console.log("⚠️ Teacher data not returned");
         setError("Kullanıcı bilgileri alınamadı. Lütfen tekrar giriş yapın.");
         
         // Oturumu sonlandır
@@ -50,7 +46,6 @@ const TeacherDashboard = () => {
         }, 2000);
       }
     } catch (error) {
-      console.log("❌ Teacher data fetch error:", error);
       setError("Sistem hatası oluştu. Lütfen tekrar giriş yapın.");
       
       // Oturumu sonlandır
@@ -65,7 +60,6 @@ const TeacherDashboard = () => {
 
   // İlk veriyi çekme işlemi
   useEffect(() => {
-    console.log("🚀 İlk açılışta öğretmen verisini çekiyorum...");
     fetchTeacherData();
     // Otomatik döngüsel yenileme kaldırıldı - sadece manuel yenileme aktif
   }, []);
@@ -85,18 +79,11 @@ const TeacherDashboard = () => {
 
   const getUserPhotoUrl = () => {
     try {
-      console.log("=== TEACHER PHOTO DEBUG ===");
-      console.log("teacherData mevcut mu:", teacherData ? "EVET" : "HAYIR");
-
       if (!teacherData) {
-        console.log("Öğretmen verisi yok!");
         return null;
       }
 
-      console.log("teacherData?.Fotograf:", teacherData?.Fotograf);
-
       if (!teacherData?.Fotograf) {
-        console.log("!!! FOTO YOK - NULL DÖNÜYORUM !!!");
         return null;
       }
 
@@ -105,23 +92,18 @@ const TeacherDashboard = () => {
         typeof teacherData.Fotograf !== "string" ||
         teacherData.Fotograf.trim() === ""
       ) {
-        console.log("!!! FOTO STRING DEĞİL VEYA BOŞ - NULL DÖNÜYORUM !!!");
         return null;
       }
 
       const photoUrl = getUploadUrl(teacherData.Fotograf);
-      console.log("Generated Teacher Photo URL:", photoUrl);
-      console.log("=== END TEACHER DEBUG ===");
 
       // URL oluşturulduysa kullan, yoksa null döndür
       if (!photoUrl) {
-        console.log("!!! PHOTO URL OLUŞTURULAMADI !!!");
         return null;
       }
 
       return photoUrl;
     } catch (error) {
-      console.log("!!! HATA OLUŞTU !!!", error);
       return null;
     }
   };
@@ -347,6 +329,38 @@ const TeacherDashboard = () => {
               Ödev verme ve takip
             </Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.actionCard,
+              { backgroundColor: theme.card, borderColor: theme.accent },
+            ]}
+            onPress={() => navigation.navigate("ExamAdd")}
+          >
+            <Text style={styles.actionIcon}>📋</Text>
+            <Text style={[styles.actionTitle, { color: theme.text }]}>
+              Sınav Ekle
+            </Text>
+            <Text style={[styles.actionDesc, { color: theme.text }]}>
+              Yeni sınav oluştur
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.actionCard,
+              { backgroundColor: theme.card, borderColor: theme.accent },
+            ]}
+            onPress={() => navigation.navigate("ExamsList")}
+          >
+            <Text style={styles.actionIcon}>📋</Text>
+            <Text style={[styles.actionTitle, { color: theme.text }]}>
+              Sınavlarım
+            </Text>
+            <Text style={[styles.actionDesc, { color: theme.text }]}>
+              Tüm sınavları görüntüle
+            </Text>
+          </TouchableOpacity>
         </View>
       </RefreshableScrollView>
 
@@ -398,6 +412,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
   },
+
   content: {
     flex: 1,
     padding: 20,

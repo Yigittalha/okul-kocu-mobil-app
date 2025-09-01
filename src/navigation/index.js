@@ -8,6 +8,7 @@ import AppDrawer from "./AppDrawer";
 import SlideMenu from "./SlideMenu";
 import { useTheme } from "../state/theme";
 import { darkClassic } from "../constants/colors";
+import ExamAdd from "../app/teacher/ExamAdd";
 
 const Stack = createNativeStackNavigator();
 

@@ -23,9 +23,9 @@ export const ThemeProvider = ({ children }) => {
         if (savedTheme !== null) {
           setIsDark(savedTheme === "dark");
         }
-      } catch (error) {
-        console.log("Theme load error:", error);
-      } finally {
+        } catch (error) {
+    // Theme load error - use default theme
+  } finally {
         setLoading(false);
       }
     };

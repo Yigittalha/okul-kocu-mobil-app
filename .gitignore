@@ -40,3 +40,8 @@ yarn-error.*
 # GitHub config files
 .github-config
 .github-config.json
+
+# Ajan dosyaları (temizlendi)
+backups/
+reports/
+tools/health/

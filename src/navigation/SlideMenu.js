@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import {
   View,
   Text,
@@ -8,11 +8,14 @@ import {
   Alert,
   Modal,
   SafeAreaView,
+  FlatList,
+  Dimensions,
 } from "react-native";
 import { SessionContext } from "../state/session";
 import { useTheme } from "../state/theme";
 import { useNavigation } from "@react-navigation/native";
 import { useSlideMenu } from "./SlideMenuContext";
+import { MENU_SCHEMA } from "./menuSchema";
 
 /**
  * Slide Menu Bileşeni - Döngüsel bağımlılıkları önlemek için
@@ -23,6 +26,14 @@ export default function SlideMenu() {
   const { theme, isDark } = useTheme();
   const navigation = useNavigation();
   const { menuVisible, closeMenu } = useSlideMenu();
+  
+  // Screen dimensions for responsive design
+  const { height } = Dimensions.get('window');
+  const MAX_LIST_HEIGHT = Math.floor(height * 0.6); // 60% of screen
+  const isSmallScreen = height < 700;
+  
+  // Accordion state for expanded categories
+  const [expandedCategories, setExpandedCategories] = useState(new Set());
 
   const handleLogout = () => {
     Alert.alert("Çıkış Yap", "Oturumu kapatmak istediğinizden emin misiniz?", [
@@ -51,103 +62,133 @@ export default function SlideMenu() {
     }
   };
 
-  const getMenuItems = () => {
-    switch (role) {
-      case "admin":
-        return [
-          {
-            name: "Dashboard",
-            label: "🏠 Ana Sayfa",
-            screen: "AdminDashboard",
-          },
-          {
-            name: "TeachersList",
-            label: "👩‍🏫 Öğretmenler",
-            screen: "TeachersList",
-          },
-          {
-            name: "StudentsList",
-            label: "👨‍🎓 Öğrenciler",
-            screen: "StudentsList",
-          },
-          {
-            name: "Users",
-            label: "👥 Kullanıcı Yönetimi",
-            screen: "AdminDashboard",
-          },
-          {
-            name: "Schools",
-            label: "🏫 Okul Yönetimi",
-            screen: "AdminDashboard",
-          },
-          {
-            name: "Attendance",
-            label: "✅ Yoklama",
-            screen: "AttendanceStart",
-          },
-          { name: "Reports", label: "📊 Raporlar", screen: "AdminDashboard" },
-        ];
-      case "teacher":
-        return [
-          { name: "Profile", label: "🏠 Profil", screen: "TeacherDashboard" },
-          {
-            name: "Schedule",
-            label: "📅 Ders Programı",
-            screen: "TeacherSchedule",
-          },
-          {
-            name: "TeachersList",
-            label: "👩‍🏫 Öğretmenler",
-            screen: "TeachersList",
-          },
-          {
-            name: "StudentsList",
-            label: "👨‍🎓 Öğrenciler",
-            screen: "StudentsList",
-          },
-          {
-            name: "Classes",
-            label: "📚 Derslerim",
-            screen: "TeacherDashboard",
-          },
-          {
-            name: "Attendance",
-            label: "✅ Yoklama",
-            screen: "AttendanceStart",
-          },
-          {
-            name: "HomeworksGiven",
-            label: "📚 Verdiğim Ödevler",
-            screen: "HomeworksGivenList",
-          },
-          {
-            name: "Messages",
-            label: "💬 Mesajlar",
-            screen: "TeacherDashboard",
-          },
-        ];
-      case "parent":
-        return [
-          {
-            name: "Student",
-            label: "🏠 Öğrenci Bilgileri",
-            screen: "ParentDashboard",
-          },
-          {
-            name: "Homework",
-            label: "📚 Ödevlerim",
-            screen: "StudentHomeworkList",
-          },
-          {
-            name: "Absences",
-            label: "📊 Devamsızlık Geçmişi",
-            screen: "StudentAbsences",
-          },
-          { name: "Messages", label: "💬 Mesajlar", screen: "ParentDashboard" },
-        ];
-      default:
-        return [];
-    }
+  const toggleCategory = (categoryKey) => {
+    setExpandedCategories(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(categoryKey)) {
+        newSet.delete(categoryKey);
+      } else {
+        newSet.add(categoryKey);
+      }
+      return newSet;
+    });
+  };
+
+  const getMenuData = () => {
+    return MENU_SCHEMA[role] || [];
+  };
+
+  const renderMenuItem = ({ item }) => (
+    <TouchableOpacity
+      style={[
+        styles.menuItem, 
+        { 
+          backgroundColor: theme.card,
+          minHeight: 44,
+          paddingVertical: isSmallScreen ? 8 : 12,
+          paddingHorizontal: 14,
+        }
+      ]}
+      onPress={() => handleNavigate(item.screen)}
+      activeOpacity={0.7}
+    >
+      <Text 
+        style={[
+          styles.menuLabel, 
+          { 
+            color: theme.text,
+            fontSize: isSmallScreen ? 14 : 16,
+          }
+        ]}
+        numberOfLines={1}
+        ellipsizeMode="tail"
+      >
+        {item.label}
+      </Text>
+    </TouchableOpacity>
+  );
+
+  const renderCategory = ({ item }) => {
+    const isExpanded = expandedCategories.has(item.key);
+    
+    return (
+      <View style={styles.categoryContainer}>
+        <TouchableOpacity
+          style={[
+            styles.categoryHeader,
+            { 
+              backgroundColor: theme.card,
+              minHeight: 44,
+              paddingVertical: isSmallScreen ? 10 : 12,
+              paddingHorizontal: 14,
+            }
+          ]}
+          onPress={() => toggleCategory(item.key)}
+          activeOpacity={0.7}
+        >
+          <View style={styles.categoryTitleRow}>
+            <Text style={styles.categoryIcon}>{item.icon}</Text>
+            <Text 
+              style={[
+                styles.categoryTitle, 
+                { 
+                  color: theme.text,
+                  fontSize: isSmallScreen ? 15 : 16,
+                }
+              ]}
+            >
+              {item.title}
+            </Text>
+          </View>
+          <Text 
+            style={[
+              styles.expandIcon, 
+              { 
+                color: theme.text,
+                transform: [{ rotate: isExpanded ? '180deg' : '0deg' }]
+              }
+            ]}
+          >
+            ▼
+          </Text>
+        </TouchableOpacity>
+        
+        {isExpanded && (
+          <View style={styles.subItemsContainer}>
+            {item.items.map((subItem) => (
+              <TouchableOpacity
+                key={subItem.key}
+                style={[
+                  styles.subMenuItem,
+                  { 
+                    backgroundColor: theme.card,
+                    minHeight: 44,
+                    paddingVertical: isSmallScreen ? 8 : 10,
+                    paddingHorizontal: 20,
+                  }
+                ]}
+                onPress={() => handleNavigate(subItem.route)}
+                activeOpacity={0.7}
+              >
+                <Text 
+                  style={[
+                    styles.subMenuLabel, 
+                    { 
+                      color: theme.text,
+                      fontSize: isSmallScreen ? 13 : 14,
+                    }
+                  ]}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {subItem.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+      </View>
+    );
   };
 
   const getRoleTitle = () => {
@@ -211,34 +252,37 @@ export default function SlideMenu() {
             )}
           </View>
 
-          <View style={styles.menuContainer}>
-            {getMenuItems().map((item) => (
-              <TouchableOpacity
-                key={item.name}
-                style={[styles.menuItem, { backgroundColor: theme.card }]}
-                onPress={() => handleNavigate(item.screen)}
-              >
-                <Text style={[styles.menuLabel, { color: theme.text }]}>
-                  {item.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          <FlatList
+            data={getMenuData()}
+            keyExtractor={(item) => item.key}
+            renderItem={renderCategory}
+            style={{ maxHeight: MAX_LIST_HEIGHT }}
+            contentContainerStyle={{ 
+              paddingVertical: 8,
+              paddingBottom: 16,
+            }}
+            showsVerticalScrollIndicator={false}
+            bounces={false}
+          />
 
-          <TouchableOpacity 
-            style={[
-              styles.logoutButton,
-              { borderColor: isDark ? theme.danger : "#ff6b6b" }
-            ]} 
-            onPress={handleLogout}
-          >
-            <Text style={[
-              styles.logoutText,
-              { color: isDark ? theme.danger : "#ff6b6b" }
-            ]}>
-              🚪 Çıkış Yap
-            </Text>
-          </TouchableOpacity>
+          <View style={styles.divider} />
+
+          <View style={styles.logoutContainer}>
+            <TouchableOpacity 
+              style={[
+                styles.logoutButton,
+                { borderColor: isDark ? theme.danger : "#ff6b6b" }
+              ]} 
+              onPress={handleLogout}
+            >
+              <Text style={[
+                styles.logoutText,
+                { color: isDark ? theme.danger : "#ff6b6b" }
+              ]}>
+                🚪 Çıkış Yap
+              </Text>
+            </TouchableOpacity>
+          </View>
         </SafeAreaView>
 
         <TouchableOpacity
@@ -333,19 +377,66 @@ const styles = StyleSheet.create({
   menuContainer: {
     flex: 1,
     paddingHorizontal: 10,
+    paddingBottom: 20,
+  },
+  categoryContainer: {
+    marginBottom: 4,
+  },
+  categoryHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderRadius: 12,
+    marginVertical: 1,
+  },
+  categoryTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  categoryIcon: {
+    fontSize: 18,
+    marginRight: 8,
+  },
+  categoryTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  expandIcon: {
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  subItemsContainer: {
+    marginLeft: 8,
+    marginTop: 2,
+  },
+  subMenuItem: {
+    borderRadius: 8,
+    marginVertical: 1,
+    marginLeft: 8,
+  },
+  subMenuLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#e0e0e0',
+    marginVertical: 8,
+    marginHorizontal: 10,
   },
   menuItem: {
-    paddingVertical: 15,
+    paddingVertical: 12,
     paddingHorizontal: 20,
     marginVertical: 2,
     borderRadius: 12,
+    minHeight: 44,
   },
   menuLabel: {
     fontSize: 16,
     fontWeight: "500",
   },
   logoutButton: {
-    margin: 20,
     backgroundColor: "transparent",
     borderWidth: 2,
     paddingVertical: 12,
@@ -356,6 +447,15 @@ const styles = StyleSheet.create({
   logoutText: {
     fontSize: 16,
     fontWeight: "bold",
+  },
+  logoutContainer: {
+    paddingHorizontal: 10,
+    paddingBottom: 30,
+    paddingTop: 10,
+    backgroundColor: 'transparent',
+  },
+  spacer: {
+    height: 20, // Add some space between menu items and the logout button
   },
   placeholderContainer: {
     flex: 1,

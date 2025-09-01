@@ -76,7 +76,8 @@ const HomeworkAssignment = () => {
 
       if (!result.canceled) {
         setPhoto(result.assets[0]);
-        console.log('📸 Photo selected:', result.assets[0].uri);
+        // TODO: remove before prod
+        // console.log('📸 Photo selected:', result.assets[0].uri);
       }
     } catch (error) {
       console.log('❌ Image picker error:', error);
@@ -165,7 +166,8 @@ const HomeworkAssignment = () => {
         formDataToSend.append('photo', photoFile);
       }
 
-      console.log('📤 Homework assignment being sent:', formData);
+      // TODO: remove before prod
+      // console.log('📤 Homework assignment being sent:', formData);
 
       const response = await api.post('/teacher/homework', formDataToSend, {
         headers: {

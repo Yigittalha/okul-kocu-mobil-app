@@ -32,7 +32,6 @@ const StudentHomeworkList = () => {
 
   // Fetch data only once on mount
   useEffect(() => {
-    console.log("🚀 Fetching student homework data on mount...");
     fetchStudentHomework();
   }, []);
 
@@ -43,20 +42,15 @@ const StudentHomeworkList = () => {
 
       // Önce geçirilen öğrenci bilgilerini kontrol et
       if (passedStudentInfo && passedStudentInfo.OgrenciId) {
-        console.log("✅ Using passed student info:", passedStudentInfo.OgrenciId);
         setStudentInfo(passedStudentInfo);
         
         // Ödev listesini al
-        console.log("🚀 Starting to fetch homework data...");
         const homeworkData = await api.post("/student/homework", {
           OgrenciID: passedStudentInfo.OgrenciId,
           Sinif: passedStudentInfo.Sinif || ""
         });
 
         if (homeworkData?.data) {
-          console.log("✅ Homework data fetched successfully!");
-          console.log("📋 Found", homeworkData.data.length, "homework items");
-          
           // Ödevleri verilme tarihine göre sırala (en yeni üstte)
           const sortedHomework = homeworkData.data.sort((a, b) => {
             const dateA = new Date(a.tarih);
@@ -66,44 +60,25 @@ const StudentHomeworkList = () => {
           
           setHomeworkList(sortedHomework);
         } else {
-          console.log("⚠️ No homework data returned");
           setHomeworkList([]);
         }
         return;
       }
 
-      console.log("🚀 No passed student info, fetching user info...");
-
       // Kullanıcı bilgilerini al (OgrenciID ve Sinif dahil)
       const userResponse = await api.post("/user/info", {});
       
-      console.log("📡 User info response received:", userResponse?.status);
-      console.log("📋 Full user response data:", userResponse?.data);
-      
       if (userResponse?.data) {
-        console.log("✅ User data received successfully");
-        console.log("🔍 Checking for OgrenciId:", userResponse.data.OgrenciId);
-        console.log("🔍 Checking for Sinif:", userResponse.data.Sinif);
-        
         if (userResponse.data.OgrenciId) {
           setStudentInfo(userResponse.data);
           
-          console.log("📋 User data set:", {
-            OgrenciId: userResponse.data.OgrenciId,
-            Sinif: userResponse.data.Sinif
-          });
-          
           // Ödev listesini al
-          console.log("🚀 Starting to fetch homework data...");
           const homeworkData = await api.post("/student/homework", {
             OgrenciID: userResponse.data.OgrenciId,
             Sinif: userResponse.data.Sinif || ""
           });
 
           if (homeworkData?.data) {
-            console.log("✅ Homework data fetched successfully!");
-            console.log("📋 Found", homeworkData.data.length, "homework items");
-            
             // Ödevleri verilme tarihine göre sırala (en yeni üstte)
             const sortedHomework = homeworkData.data.sort((a, b) => {
               const dateA = new Date(a.tarih);
@@ -113,14 +88,9 @@ const StudentHomeworkList = () => {
             
             setHomeworkList(sortedHomework);
           } else {
-            console.log("⚠️ No homework data returned");
             setHomeworkList([]);
           }
-
-
         } else {
-          console.log("⚠️ OgrenciId is missing from user data");
-          console.log("📋 Available user data fields:", Object.keys(userResponse.data));
           setError("Öğrenci ID bilgisi bulunamadı. Lütfen tekrar giriş yapın.");
           
           // Oturumu sonlandır
@@ -129,7 +99,6 @@ const StudentHomeworkList = () => {
           }, 2000);
         }
       } else {
-        console.log("⚠️ No user data received from API");
         setError("Kullanıcı bilgileri alınamadı. Lütfen tekrar giriş yapın.");
         
         // Oturumu sonlandır
@@ -138,15 +107,7 @@ const StudentHomeworkList = () => {
         }, 2000);
       }
     } catch (error) {
-      console.log("❌ Homework fetch error:", error);
-      console.log("❌ Error details:", {
-        message: error.message,
-        status: error.response?.status,
-        data: error.response?.data
-      });
-      
       if (error.response?.status === 401) {
-        console.log("🔐 Authorization error - clearing session");
         clearSession();
         navigation.navigate('Login');
       } else {

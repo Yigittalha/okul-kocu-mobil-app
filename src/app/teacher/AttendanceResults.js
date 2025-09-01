@@ -49,7 +49,8 @@ const AttendanceResults = ({ route }) => {
         durum: newStatus
       };
 
-      console.log('📤 Tekil öğrenci yoklaması kaydediliyor:', payload);
+      // TODO: remove before prod
+      // console.log('📤 Tekil öğrenci yoklaması kaydediliyor:', payload);
 
       const response = await api.post('/teacher/attendanceadd', payload, {
         headers: {
@@ -58,7 +59,8 @@ const AttendanceResults = ({ route }) => {
       });
 
       if (response.status === 200) {
-        console.log('✅ Tekil öğrenci yoklaması kaydedildi:', payload);
+        // TODO: remove before prod
+        // console.log('✅ Tekil öğrenci yoklaması kaydedildi:', payload);
       }
     } catch (error) {
       console.log('❌ Tekil öğrenci yoklaması kaydetme hatası:', error);

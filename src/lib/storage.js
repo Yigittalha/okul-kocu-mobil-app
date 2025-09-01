@@ -28,10 +28,20 @@ async function read(key) {
 }
 
 export async function setToken(token) {
-  return save(ACCESS_TOKEN_KEY, token);
+  try {
+    await save(ACCESS_TOKEN_KEY, token);
+  } catch (error) {
+    console.error("❌ Error in setToken():", error);
+  }
 }
 export async function getToken() {
-  return read(ACCESS_TOKEN_KEY);
+  try {
+    const token = await read(ACCESS_TOKEN_KEY);
+    return token;
+  } catch (error) {
+    console.error("❌ Error in getToken():", error);
+    return null;
+  }
 }
 export async function setRefreshToken(token) {
   return save(REFRESH_TOKEN_KEY, token);
@@ -62,4 +72,17 @@ export async function setTheme(theme) {
 }
 export async function getTheme() {
   return read(THEME_KEY);
+}
+
+// Tüm storage'ı temizle
+export async function clearAllStorage() {
+  await Promise.all([
+    SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY),
+    SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY),
+    SecureStore.deleteItemAsync(SCHOOL_CODE_KEY),
+    SecureStore.deleteItemAsync(ROLE_KEY),
+    SecureStore.deleteItemAsync(USER_KEY),
+    SecureStore.deleteItemAsync(THEME_KEY),
+  ]);
+  console.log('🧹 Tüm storage temizlendi');
 }

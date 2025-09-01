@@ -12,7 +12,7 @@ import {
   ScrollView,
 } from "react-native";
 import api from "../../lib/api";
-import { getToken } from "../../lib/storage";
+import { getToken, clearAllStorage } from "../../lib/storage";
 import { darkBlue, yellow } from "../../constants/colors";
 import { SessionContext } from "../../state/session";
 import { useTheme } from "../../state/theme";
@@ -24,6 +24,15 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const handleClearStorage = async () => {
+    try {
+      await clearAllStorage();
+      Alert.alert("Başarılı", "Storage temizlendi. Lütfen yeniden giriş yapın.");
+    } catch (error) {
+      Alert.alert("Hata", "Storage temizlenirken hata oluştu");
+    }
+  };
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -44,6 +53,9 @@ const Login = () => {
         return;
       }
 
+      console.log("🔍 Login API response received");
+      console.log("🔍 Response data:", response.data);
+      
       const { token, rol } = response.data;
 
       if (token && rol) {
@@ -63,10 +75,6 @@ const Login = () => {
             role = "parent"; // Default fallback
         }
 
-        console.log("Login successful, saving token and role...");
-        console.log("🔑 Token received:", token);
-        console.log("🎭 Role received:", role);
-
         // Only save token, role and schoolCode - let dashboards fetch user data
         await setSession({
           accessToken: token,
@@ -74,16 +82,27 @@ const Login = () => {
           schoolCode,
         });
 
-        // Verify token was saved
-        // const savedToken = await getToken(); // This line was not in the original file, so it's removed.
-        // console.log('✅ Token saved to storage:', savedToken ? 'YES' : 'NO');
-        // console.log('💾 Saved token value:', savedToken);
-
         Alert.alert("Başarılı", "Giriş başarılı!");
       } else {
         Alert.alert("Hata", "Geçersiz yanıt formatı");
       }
     } catch (err) {
+      console.error("❌ Login API error occurred");
+      console.error("❌ Error type:", err.constructor.name);
+      console.error("❌ Error message:", err.message);
+      console.error("❌ Error code:", err.code);
+      
+      if (err.response) {
+        console.error("❌ Response status:", err.response.status);
+        console.error("❌ Response data:", err.response.data);
+        console.error("❌ Response headers:", err.response.headers);
+      } else if (err.request) {
+        console.error("❌ Request was made but no response received");
+        console.error("❌ Request:", err.request);
+      } else {
+        console.error("❌ Error setting up request");
+      }
+      
       if (err.response?.status === 400) {
         Alert.alert(
           "Giriş başarısız",
@@ -91,6 +110,11 @@ const Login = () => {
         );
       } else if (err.response?.data === false) {
         Alert.alert("Giriş başarısız", "Kullanıcı adı veya şifre yanlış");
+      } else if (err.code === 'ERR_NETWORK' || err.message.includes('Network Error')) {
+        Alert.alert(
+          "Bağlantı Hatası",
+          "Sunucuya bağlanılamıyor. Lütfen internet bağlantınızı kontrol edin."
+        );
       } else {
         Alert.alert(
           "Giriş başarısız",
@@ -187,6 +211,18 @@ const Login = () => {
               {loading ? "🔄 Giriş yapılıyor..." : "🚀 Giriş Yap"}
             </Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.clearButton,
+              { backgroundColor: theme.input },
+            ]}
+            onPress={handleClearStorage}
+          >
+            <Text style={[styles.clearButtonText, { color: theme.text }]}>
+              🧹 Storage Temizle
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -277,6 +313,17 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 18,
     fontWeight: "bold",
+  },
+  clearButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 10,
+  },
+  clearButtonText: {
+    fontSize: 14,
+    textAlign: "center",
   },
 });
 

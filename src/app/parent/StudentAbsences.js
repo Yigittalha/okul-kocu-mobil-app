@@ -31,39 +31,24 @@ const StudentAbsences = () => {
 
   // Fetch data only once on mount
   useEffect(() => {
-    console.log("🚀 StudentAbsences component mounted!");
-    console.log("🚀 Fetching student absences data on mount...");
     fetchStudentAbsences();
   }, []);
 
   const fetchStudentAbsences = async () => {
-    console.log("🚀 fetchStudentAbsences function called!");
     try {
       setLoading(true);
       setError(null);
 
       // Önce geçirilen öğrenci bilgilerini kontrol et
       if (passedStudentInfo && passedStudentInfo.OgrenciId) {
-        console.log("✅ Using passed student info:", passedStudentInfo.OgrenciId);
         setStudentInfo(passedStudentInfo);
         
         // Devamsızlık listesini al
-        console.log("🚀 Starting to fetch absences data...");
-        console.log("🌐 Full API URL will be: https://c802f00043e4.ngrok-free.app/api/student/attendance");
-        console.log("📤 Request body:", { OgrenciID: passedStudentInfo.OgrenciId });
-        
         const absencesResponse = await api.post("/student/attendance", {
           OgrenciID: passedStudentInfo.OgrenciId
         });
 
-        console.log("📡 Absences API Response received:", absencesResponse?.status);
-        console.log("📋 Response data type:", typeof absencesResponse?.data);
-        console.log("📋 Response data length:", Array.isArray(absencesResponse?.data) ? absencesResponse?.data.length : 'Not an array');
-
         if (absencesResponse?.data) {
-          console.log("✅ Absences data fetched successfully!");
-          console.log("📋 Found", absencesResponse.data.length, "absence records");
-          
           // Devamsızlıkları tarihe göre sırala (en yeni üstte)
           const sortedAbsences = absencesResponse.data.sort((a, b) => {
             const dateA = new Date(a.tarih);
@@ -73,48 +58,24 @@ const StudentAbsences = () => {
           
           setAbsencesList(sortedAbsences);
         } else {
-          console.log("⚠️ No absences data returned");
           setAbsencesList([]);
         }
         return;
       }
 
-      console.log("🚀 No passed student info, fetching user info...");
-
       // Kullanıcı bilgilerini al (OgrenciId dahil)
       const userResponse = await api.post("/user/info", {});
       
-      console.log("📡 User info response received:", userResponse?.status);
-      console.log("📋 Full user response data:", userResponse?.data);
-      
       if (userResponse?.data) {
-        console.log("✅ User data received successfully");
-        console.log("🔍 Checking for OgrenciId:", userResponse.data.OgrenciId);
-        
         if (userResponse.data.OgrenciId) {
           setStudentInfo(userResponse.data);
           
-          console.log("📋 User data set:", {
-            OgrenciId: userResponse.data.OgrenciId
-          });
-          
           // Devamsızlık listesini al
-          console.log("🚀 Starting to fetch absences data...");
-          console.log("🌐 Full API URL will be: https://c802f00043e4.ngrok-free.app/api/student/attendance");
-          console.log("📤 Request body:", { OgrenciID: userResponse.data.OgrenciId });
-          
           const absencesResponse = await api.post("/student/attendance", {
             OgrenciID: userResponse.data.OgrenciId
           });
 
-          console.log("📡 Absences API Response received:", absencesResponse?.status);
-          console.log("📋 Response data type:", typeof absencesResponse?.data);
-          console.log("📋 Response data length:", Array.isArray(absencesResponse?.data) ? absencesResponse?.data.length : 'Not an array');
-
           if (absencesResponse?.data) {
-            console.log("✅ Absences data fetched successfully!");
-            console.log("📋 Found", absencesResponse.data.length, "absence records");
-            
             // Devamsızlıkları tarihe göre sırala (en yeni üstte)
             const sortedAbsences = absencesResponse.data.sort((a, b) => {
               const dateA = new Date(a.tarih);
@@ -124,12 +85,9 @@ const StudentAbsences = () => {
             
             setAbsencesList(sortedAbsences);
           } else {
-            console.log("⚠️ No absences data returned");
             setAbsencesList([]);
           }
         } else {
-          console.log("⚠️ OgrenciId is missing from user data");
-          console.log("📋 Available user data fields:", Object.keys(userResponse.data));
           setError("Öğrenci ID bilgisi bulunamadı. Lütfen tekrar giriş yapın.");
           
           // Oturumu sonlandır
@@ -138,7 +96,6 @@ const StudentAbsences = () => {
           }, 2000);
         }
       } else {
-        console.log("⚠️ No user data received from API");
         setError("Kullanıcı bilgileri alınamadı. Lütfen tekrar giriş yapın.");
         
         // Oturumu sonlandır
@@ -147,20 +104,7 @@ const StudentAbsences = () => {
         }, 2000);
       }
     } catch (error) {
-      console.log("❌ Absences fetch error:", error);
-      console.log("❌ Error message:", error.message);
-      if (error.response) {
-        console.log("❌ Response status:", error.response.status);
-        console.log("❌ Response data:", error.response.data);
-        console.log("❌ Response headers:", error.response.headers);
-      } else if (error.request) {
-        console.log("❌ Request was made but no response received:", error.request);
-      } else {
-        console.log("❌ Error setting up request:", error.message);
-      }
-      
       if (error.response?.status === 401) {
-        console.log("🔐 Authorization error - clearing session");
         clearSession();
         navigation.navigate('Login');
       } else {

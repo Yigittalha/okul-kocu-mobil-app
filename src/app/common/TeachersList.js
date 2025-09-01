@@ -168,7 +168,6 @@ const TeachersList = () => {
         const data = await fetchTeachers(pageNumber, ITEMS_PER_PAGE);
 
         if (data && Array.isArray(data)) {
-          console.log(`📊 Received ${data.length} teachers`);
           let newTeachers = data;
           
           if (shouldRefresh || pageNumber === 1) {
@@ -185,7 +184,6 @@ const TeachersList = () => {
           // If we received fewer items than requested, we've reached the end
           setHasMore(data.length === ITEMS_PER_PAGE);
         } else {
-          console.log("⚠️ API returned invalid data or null, using mock data");
           useMockData(pageNumber, shouldRefresh);
         }
       } catch (error) {

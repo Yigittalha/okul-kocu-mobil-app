@@ -7,7 +7,7 @@ import {
 } from "./storage";
 
 // API URL'yi doğrudan burada tanımla - ngrok URL'sini kullan
-const API_BASE_URL = "https://c802f00043e4.ngrok-free.app/api";
+const API_BASE_URL = "https://0ecc9eeb16bb.ngrok-free.app/api";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -59,7 +59,7 @@ export const getUploadUrl = (filename) => {
   // API'den gerçek fotoğraf URL'sini oluştur
   try {
     // API URL'yi doğru formatta oluştur
-    const uploadBaseUrl = "https://c802f00043e4.ngrok-free.app/uploads";
+    const uploadBaseUrl = "https://0ecc9eeb16bb.ngrok-free.app/uploads";
 
     // URL sonunda slash olup olmadığını kontrol et
     const baseUrlWithSlash = uploadBaseUrl.endsWith("/")
@@ -270,17 +270,15 @@ export const setSessionClearCallback = (callback) => {
 };
 
 api.interceptors.request.use(async (config) => {
-  const token = await getToken();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-    console.log(
-      "✅ Token found and added to POST request:",
-      token.substring(0, 30) + "...",
-    );
-    console.log("✅ POST Request URL:", config.url);
-    console.log("✅ POST Request method:", config.method);
-  } else {
-    console.log("❌ NO TOKEN FOUND in storage for POST request");
+  try {
+    const token = await getToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      console.log("❌ NO TOKEN FOUND in storage for request");
+    }
+  } catch (error) {
+    console.error("❌ Error getting token:", error);
   }
   return config;
 });

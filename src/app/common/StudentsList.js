@@ -165,11 +165,9 @@ const StudentsList = () => {
       const data = await fetchAllStudents();
 
       if (data && Array.isArray(data)) {
-        console.log(`📊 Received ${data.length} students`);
         setStudents(data);
         setFilteredStudents(data); // Başlangıçta tüm öğrencileri göster
       } else {
-        console.log("⚠️ API returned invalid data or null, using mock data");
         // Use mock data when API fails
         const mockData = getMockStudents();
         setStudents(mockData);

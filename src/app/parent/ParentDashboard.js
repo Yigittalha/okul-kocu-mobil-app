@@ -28,27 +28,20 @@ const ParentDashboard = () => {
 
   // Fetch data only once on mount
   useEffect(() => {
-    console.log("🚀 Fetching student data on mount...");
     fetchStudentData();
   }, []);
 
   const fetchStudentData = async () => {
     try {
-      console.log("🚀 Fetching student data using fetchAllStudents API...");
       const data = await fetchAllStudents(true); // showErrors true olarak ayarlandı
 
       if (data && data.length > 0) {
-        console.log("✅ Student data fetched successfully!");
-        console.log("📋 Found", data.length, "students");
-
         // Use the first student from the response
         const studentInfo = data[0];
-        console.log("📋 Using student data:", studentInfo);
 
         setStudentData(studentInfo);
         setError(null); // Hata durumunu temizle
       } else {
-        console.log("⚠️ No student data returned");
         setError("Öğrenci bilgileri alınamadı. Lütfen tekrar giriş yapın.");
         
         // Oturumu sonlandır
@@ -57,7 +50,6 @@ const ParentDashboard = () => {
         }, 2000);
       }
     } catch (error) {
-      console.log("❌ Student data fetch error:", error);
       setError("Sistem hatası oluştu. Lütfen tekrar giriş yapın.");
       
       // Oturumu sonlandır
@@ -85,18 +77,11 @@ const ParentDashboard = () => {
 
   const getStudentPhotoUrl = () => {
     try {
-      console.log("=== STUDENT PHOTO DEBUG ===");
-      console.log("studentData mevcut mu:", studentData ? "EVET" : "HAYIR");
-
       if (!studentData) {
-        console.log("Öğrenci verisi yok!");
         return null;
       }
 
-      console.log("studentData?.Fotograf:", studentData?.Fotograf);
-
       if (!studentData?.Fotograf) {
-        console.log("!!! FOTO YOK - NULL DÖNÜYORUM !!!");
         return null;
       }
 
@@ -105,25 +90,18 @@ const ParentDashboard = () => {
         typeof studentData.Fotograf !== "string" ||
         studentData.Fotograf.trim() === ""
       ) {
-        console.log("!!! FOTO STRING DEĞİL VEYA BOŞ - NULL DÖNÜYORUM !!!");
         return null;
       }
 
-      console.log("getUploadUrl FONKSİYONUNU ÇAĞIRIYORUM...");
       const photoUrl = getUploadUrl(studentData.Fotograf);
-      console.log("FONKSİYON ÇAĞRILDI. SONUÇ:");
-      console.log("Generated Student Photo URL:", photoUrl);
-      console.log("=== END STUDENT DEBUG ===");
 
       // URL oluşturulduysa kullan, yoksa null döndür
       if (!photoUrl) {
-        console.log("!!! PHOTO URL OLUŞTURULAMADI !!!");
         return null;
       }
 
       return photoUrl;
     } catch (error) {
-      console.log("!!! HATA OLUŞTU !!!", error);
       return null;
     }
   };
@@ -206,7 +184,6 @@ const ParentDashboard = () => {
           <View style={styles.avatarContainer}>
             {(() => {
               const photoUrl = getStudentPhotoUrl();
-              console.log("Student photo URL for rendering:", photoUrl);
 
               if (photoUrl) {
                 return (
@@ -421,7 +398,9 @@ const ParentDashboard = () => {
 
         {/* Absences Button */}
         <TouchableOpacity
-          style={[styles.absencesButton, { backgroundColor: theme.warning }]}
+          style={[styles.absencesButton, { 
+            backgroundColor: isDark ? theme.warning : '#FF9500' // Aydınlık modda iOS turuncu
+          }]}
           onPress={() => navigation.navigate('StudentAbsences', { studentInfo: studentData })}
         >
           <Text style={[styles.absencesButtonText, { color: '#fff' }]}>

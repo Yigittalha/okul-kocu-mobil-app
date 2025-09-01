@@ -27,6 +27,10 @@ import StudentHomeworkList from "../app/parent/StudentHomeworkList";
 import StudentHomeworkDetail from "../app/parent/StudentHomeworkDetail";
 // Import StudentAbsences screen
 import StudentAbsences from "../app/parent/StudentAbsences";
+// Import ExamAdd screen
+import ExamAdd from "../app/teacher/ExamAdd";
+import ExamsList from "../app/teacher/ExamsList";
+import ExamDetail from "../app/teacher/ExamDetail";
 
 const Stack = createNativeStackNavigator();
 
@@ -59,6 +63,9 @@ export default function AppDrawer() {
           <Stack.Screen name="HomeworkAssignment" component={HomeworkAssignment} />
           <Stack.Screen name="HomeworksGivenList" component={HomeworksGivenList} />
           <Stack.Screen name="HomeworkGivenDetail" component={HomeworkGivenDetail} />
+          <Stack.Screen name="ExamAdd" component={ExamAdd} />
+          <Stack.Screen name="ExamsList" component={ExamsList} />
+          <Stack.Screen name="ExamDetail" component={ExamDetail} />
         </>
       )}
       {role === "parent" && (
