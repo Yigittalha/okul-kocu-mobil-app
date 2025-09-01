@@ -81,10 +81,11 @@ export const getUploadUrl = (filename) => {
 export const fetchUserInfo = async (showErrors = false) => {
   try {
     const token = await getToken();
-    console.log(
-      "🔍 Fetching user info with token:",
-      token ? `${token.substring(0, 15)}...` : "NO TOKEN",
-    );
+    // TODO: remove before prod
+    // console.log(
+    //   "🔍 Fetching user info with token:",
+    //   token ? `${token.substring(0, 15)}...` : "NO TOKEN",
+    // );
 
     if (!token) {
       throw new Error("No authentication token available");
@@ -168,10 +169,11 @@ export const fetchTeachers = async (
 ) => {
   try {
     const token = await getToken();
-    console.log(
-      "🔍 Fetching teachers with token:",
-      token ? `${token.substring(0, 15)}...` : "NO TOKEN",
-    );
+    // TODO: remove before prod
+    // console.log(
+    //   "🔍 Fetching teachers with token:",
+    //   token ? `${token.substring(0, 15)}...` : "NO TOKEN",
+    // );
 
     const response = await api.post(
       "/teacher/allteacher",
@@ -203,10 +205,11 @@ export const fetchTeachers = async (
 export const fetchAllStudents = async (showErrors = false) => {
   try {
     const token = await getToken();
-    console.log(
-      "🔍 Fetching all students with token:",
-      token ? `${token.substring(0, 15)}...` : "NO TOKEN",
-    );
+    // TODO: remove before prod
+    // console.log(
+    //   "🔍 Fetching all students with token:",
+    //   token ? `${token.substring(0, 15)}...` : "NO TOKEN",
+    // );
 
     if (!token) {
       throw new Error("No authentication token available");
@@ -273,12 +276,13 @@ api.interceptors.request.use(async (config) => {
   const token = await getToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
-    console.log(
-      "✅ Token found and added to POST request:",
-      token.substring(0, 30) + "...",
-    );
-    console.log("✅ POST Request URL:", config.url);
-    console.log("✅ POST Request method:", config.method);
+    // TODO: remove before prod
+    // console.log(
+    //   "✅ Token found and added to POST request:",
+    //   token.substring(0, 30) + "...",
+    // );
+    // console.log("✅ POST Request URL:", config.url);
+    // console.log("✅ POST Request method:", config.method);
   } else {
     console.log("❌ NO TOKEN FOUND in storage for POST request");
   }

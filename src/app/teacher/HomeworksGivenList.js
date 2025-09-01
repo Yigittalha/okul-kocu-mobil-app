@@ -28,7 +28,8 @@ const HomeworksGivenList = () => {
 
   // Fetch data only once on mount
   useEffect(() => {
-    console.log("🚀 Fetching teacher homeworks data on mount...");
+    // TODO: remove before prod
+    // console.log("🚀 Fetching teacher homeworks data on mount...");
     fetchTeacherHomeworks();
   }, []);
 
@@ -37,41 +38,48 @@ const HomeworksGivenList = () => {
       setLoading(true);
       setError(null);
 
-      console.log("🚀 Starting to fetch teacher info...");
+      // TODO: remove before prod
+      // console.log("🚀 Starting to fetch teacher info...");
 
       // Öğretmen bilgilerini al
       const teacherResponse = await api.post("/user/info", {});
       
-      console.log("📡 Teacher info response received:", teacherResponse?.status);
-      console.log("📋 Full teacher response data:", teacherResponse?.data);
+      // TODO: remove before prod
+      // console.log("📡 Teacher info response received:", teacherResponse?.status);
+      // console.log("📋 Full teacher response data:", teacherResponse?.data);
       
       if (teacherResponse?.data) {
-        console.log("✅ Teacher data received successfully");
-        console.log("🔍 Checking for OgretmenID:", teacherResponse.data.OgretmenID);
+        // TODO: remove before prod
+        // console.log("✅ Teacher data received successfully");
+        // console.log("🔍 Checking for OgretmenID:", teacherResponse.data.OgretmenID);
         
         if (teacherResponse.data.OgretmenID) {
           setTeacherInfo(teacherResponse.data);
           
-          console.log("📋 Teacher data set:", {
-            OgretmenID: teacherResponse.data.OgretmenID
-          });
+          // TODO: remove before prod
+          // console.log("📋 Teacher data set:", {
+          //   OgretmenID: teacherResponse.data.OgretmenID
+          // });
           
           // Ödev listesini al
-          console.log("🚀 Starting to fetch homeworks data...");
-          console.log("🌐 Full API URL will be: https://c802f00043e4.ngrok-free.app/api/teacher/homeworkget");
-          console.log("📤 Request body:", { OgretmenID: teacherResponse.data.OgretmenID });
+          // TODO: remove before prod
+          // console.log("🚀 Starting to fetch homeworks data...");
+          // console.log("🌐 Full API URL will be: https://c802f00043e4.ngrok-free.app/api/teacher/homeworkget");
+          // console.log("📤 Request body:", { OgretmenID: teacherResponse.data.OgretmenID });
           
           const homeworksResponse = await api.post("/teacher/homeworkget", {
             OgretmenID: teacherResponse.data.OgretmenID
           });
 
-          console.log("📡 Homeworks API Response received:", homeworksResponse?.status);
-          console.log("📋 Response data type:", typeof homeworksResponse?.data);
-          console.log("📋 Response data length:", Array.isArray(homeworksResponse?.data) ? homeworksResponse?.data.length : 'Not an array');
+          // TODO: remove before prod
+          // console.log("📡 Homeworks API Response received:", homeworksResponse?.status);
+          // console.log("📋 Response data type:", typeof homeworksResponse?.data);
+          // console.log("📋 Response data length:", Array.isArray(homeworksResponse?.data) ? homeworksResponse?.data.length : 'Not an array');
 
           if (homeworksResponse?.data) {
-            console.log("✅ Homeworks data fetched successfully!");
-            console.log("📋 Found", homeworksResponse.data.length, "homework items");
+            // TODO: remove before prod
+            // console.log("✅ Homeworks data fetched successfully!");
+            // console.log("📋 Found", homeworksResponse.data.length, "homework items");
             
             // Ödevleri tarihe göre sırala (en yeni üstte)
             const sortedHomeworks = homeworksResponse.data.sort((a, b) => {
@@ -82,12 +90,14 @@ const HomeworksGivenList = () => {
             
             setHomeworksList(sortedHomeworks);
           } else {
-            console.log("⚠️ No homeworks data returned");
+            // TODO: remove before prod
+            // console.log("⚠️ No homeworks data returned");
             setHomeworksList([]);
           }
         } else {
-          console.log("⚠️ OgretmenID is missing from teacher data");
-          console.log("📋 Available teacher data fields:", Object.keys(teacherResponse.data));
+          // TODO: remove before prod
+          // console.log("⚠️ OgretmenID is missing from teacher data");
+          // console.log("📋 Available teacher data fields:", Object.keys(teacherResponse.data));
           setError("Öğretmen ID bilgisi bulunamadı. Lütfen tekrar giriş yapın.");
           
           // Oturumu sonlandır
@@ -96,7 +106,8 @@ const HomeworksGivenList = () => {
           }, 2000);
         }
       } else {
-        console.log("⚠️ No teacher data received from API");
+        // TODO: remove before prod
+        // console.log("⚠️ No teacher data received from API");
         setError("Öğretmen bilgileri alınamadı. Lütfen tekrar giriş yapın.");
         
         // Oturumu sonlandır
@@ -105,20 +116,22 @@ const HomeworksGivenList = () => {
         }, 2000);
       }
     } catch (error) {
-      console.log("❌ Homeworks fetch error:", error);
-      console.log("❌ Error message:", error.message);
+      // TODO: remove before prod
+      // console.log("❌ Homeworks fetch error:", error);
+      // console.log("❌ Error message:", error.message);
       if (error.response) {
-        console.log("❌ Response status:", error.response.status);
-        console.log("❌ Response data:", error.response.data);
-        console.log("❌ Response headers:", error.response.headers);
+        // console.log("❌ Response status:", error.response.status);
+        // console.log("❌ Response data:", error.response.data);
+        // console.log("❌ Response headers:", error.response.headers);
       } else if (error.request) {
-        console.log("❌ Request was made but no response received:", error.request);
+        // console.log("❌ Request was made but no response received:", error.request);
       } else {
-        console.log("❌ Error setting up request:", error.message);
+        // console.log("❌ Error setting up request:", error.message);
       }
       
       if (error.response?.status === 401) {
-        console.log("🔐 Authorization error - clearing session");
+        // TODO: remove before prod
+        // console.log("🔐 Authorization error - clearing session");
         clearSession();
         navigation.navigate('Login');
       } else {

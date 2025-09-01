@@ -55,7 +55,8 @@ const AttendanceStart = () => {
         throw new Error('Token bulunamadı');
       }
       
-      console.log('🔍 Sınıf listesi çekiliyor... Token:', token.substring(0, 20) + '...');
+      // TODO: remove before prod
+      // console.log('🔍 Sınıf listesi çekiliyor... Token:', token.substring(0, 20) + '...');
       
       // API'den sınıfları çek - token ile birlikte
       console.log('🌐 API çağrısı yapılıyor: /student/classall');
@@ -68,7 +69,8 @@ const AttendanceStart = () => {
       
       console.log('📡 API yanıtı alındı:', response.status, response.statusText);
       
-      console.log('📊 Sınıf verileri alındı:', response.data);
+      // TODO: remove before prod
+      // console.log('📊 Sınıf verileri alındı:', response.data);
       
       if (response.data && Array.isArray(response.data)) {
         setClasses(response.data);
