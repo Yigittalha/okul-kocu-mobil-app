@@ -45,3 +45,4 @@ yarn-error.*
 backups/
 reports/
 tools/health/
+tools/health/reports/
