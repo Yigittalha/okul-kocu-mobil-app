@@ -1,17 +1,20 @@
-import * as SecureStore from 'expo-secure-store';
+import * as SecureStore from "expo-secure-store";
 
-const ACCESS_TOKEN_KEY = 'accessToken';
-const REFRESH_TOKEN_KEY = 'refreshToken';
-const SCHOOL_CODE_KEY = 'schoolCode';
-const ROLE_KEY = 'role';
-const USER_KEY = 'user';
-const THEME_KEY = 'theme';
+const ACCESS_TOKEN_KEY = "accessToken";
+const REFRESH_TOKEN_KEY = "refreshToken";
+const SCHOOL_CODE_KEY = "schoolCode";
+const ROLE_KEY = "role";
+const USER_KEY = "user";
+const THEME_KEY = "theme";
 
 async function save(key, value) {
   if (value === null || value === undefined) {
     await SecureStore.deleteItemAsync(key);
   } else {
-    await SecureStore.setItemAsync(key, typeof value === 'string' ? value : JSON.stringify(value));
+    await SecureStore.setItemAsync(
+      key,
+      typeof value === "string" ? value : JSON.stringify(value),
+    );
   }
 }
 
@@ -59,4 +62,4 @@ export async function setTheme(theme) {
 }
 export async function getTheme() {
   return read(THEME_KEY);
-} 
+}

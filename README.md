@@ -1,6 +1,45 @@
 # School App
 
-Bu React Native Expo uygulaması öğrenci, öğretmen ve admin modüllerini içeren bir okul yönetim sistemidir.
+## Theme Update
+
+Light theme remains unchanged; Dark theme now uses a classic dark palette. Navy/yellow colors have been removed from dark mode.
+
+### Theme Tokens
+All theme tokens are located in `src/constants/colors.js`. The application uses the following themes:
+
+- `light`: The default light theme (unchanged)
+- `darkClassic`: The new classic dark theme with the following tokens:
+  - `background`  = `#0B0F14`  (near-black)
+  - `surface`     = `#121417`
+  - `card`        = `#161A20`
+  - `border`      = `#232A33`
+  - `textPrimary` = `#E6E8EB`
+  - `textSecondary`=`#AAB2BD`
+  - `muted`       = `#6B7280`
+  - `accent`      = `#4F9CF9`  (subtle blue)
+  - `success`     = `#22C55E`
+  - `warning`     = `#F59E0B`
+  - `danger`      = `#EF4444`
+
+### How to Use Tokens
+
+Components can access theme tokens using the `useTheme` hook:
+
+```javascript
+import { useTheme } from '../state/theme';
+
+function MyComponent() {
+  const { theme, isDark } = useTheme();
+  
+  return (
+    <View style={{ backgroundColor: theme.background }}>
+      <Text style={{ color: theme.text }}>Hello World</Text>
+    </View>
+  );
+}
+```
+
+To tweak the theme, modify the tokens in `src/constants/colors.js`.
 
 ## Otomatik GitHub Yükleme
 

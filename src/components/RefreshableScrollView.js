@@ -1,6 +1,6 @@
-import React from 'react';
-import { RefreshControl, ScrollView } from 'react-native';
-import { useTheme } from '../state/theme';
+import React from "react";
+import { RefreshControl, ScrollView } from "react-native";
+import { useTheme } from "../state/theme";
 
 /**
  * A component that wraps ScrollView with pull-to-refresh functionality
@@ -8,14 +8,14 @@ import { useTheme } from '../state/theme';
  * @param {boolean} refreshing - Whether the refresh indicator should be shown
  * @param {Object} props - All other props to pass to the ScrollView
  */
-const RefreshableScrollView = ({ 
-  onRefresh, 
-  refreshing = false, 
-  children, 
-  ...props 
+const RefreshableScrollView = ({
+  onRefresh,
+  refreshing = false,
+  children,
+  ...props
 }) => {
   const { theme } = useTheme();
-  
+
   return (
     <ScrollView
       refreshControl={
@@ -35,4 +35,4 @@ const RefreshableScrollView = ({
   );
 };
 
-export default RefreshableScrollView; 
+export default RefreshableScrollView;

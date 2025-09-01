@@ -1,61 +1,62 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import api, { getUploadUrl, fetchUserInfo } from '../../lib/api';
-import { getToken } from '../../lib/storage';
-import { darkBlue, yellow } from '../../constants/colors';
-import { SessionContext } from '../../state/session';
-import { useTheme } from '../../state/theme';
-import { SlideMenu } from '../../navigation/AppDrawer';
-import ThemeToggle from '../../components/ThemeToggle';
-import RefreshableScrollView from '../../components/RefreshableScrollView';
+import React, { useContext, useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import api, { getUploadUrl, fetchUserInfo } from "../../lib/api";
+import { getToken } from "../../lib/storage";
+import { SessionContext } from "../../state/session";
+import { useTheme } from "../../state/theme";
+import { useSlideMenu } from "../../navigation/SlideMenuContext";
+import ThemeToggle from "../../ui/theme/ThemeToggle";
+import RefreshableScrollView from "../../components/RefreshableScrollView";
+
+// Removed darkBlue and yellow imports - using theme tokens now
 
 const AdminDashboard = () => {
   const navigation = useNavigation();
-  const { schoolCode } = useContext(SessionContext);
+  const { schoolCode, clearSession } = useContext(SessionContext);
   const { theme, isDark, toggleTheme } = useTheme();
+  const { openMenu } = useSlideMenu();
   const [adminData, setAdminData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [menuVisible, setMenuVisible] = useState(false);
+  const [error, setError] = useState(null);
+
+  // menuVisible state'i kaldırıldı - döngüsel bağımlılık çözümü
 
   const fetchAdminData = async () => {
     try {
-      console.log('🚀 Fetching admin data using fetchUserInfo...');
-      const data = await fetchUserInfo();
-      
+      console.log("🚀 Fetching admin data using fetchUserInfo...");
+      const data = await fetchUserInfo(true); // showErrors true olarak ayarlandı
+
       if (data) {
-        console.log('✅ Admin user info fetched successfully!');
-        console.log('📋 Response data:', data);
+        console.log("✅ Admin user info fetched successfully!");
+        console.log("📋 Response data:", data);
         setAdminData(data);
+        setError(null); // Hata durumunu temizle
       } else {
-        console.log('⚠️ Admin data not returned, using mock data');
-        // Fallback mock data when API fails
-        setAdminData({
-          "AdSoyad": "Admin Kullanıcı",
-          "Cinsiyet": "1",
-          "DogumTarihi": "2003-08-27T00:00:00.000Z",
-          "TCKimlikNo": "15208996796",
-          "Telefon": "05332118730",
-          "Eposta": "admin@school.com",
-          "Bolum": "Yönetim",
-          "Fotograf": `admin_${Math.floor(Math.random() * 1000)}.jpg`
-        });
+        console.log("⚠️ Admin data not returned");
+        setError("Kullanıcı bilgileri alınamadı. Lütfen tekrar giriş yapın.");
+        // Oturumu sonlandır
+        setTimeout(() => {
+          clearSession();
+        }, 2000);
       }
     } catch (error) {
-      console.log('❌ Admin data fetch error:', error);
+      console.log("❌ Admin data fetch error:", error);
+      setError("Sistem hatası oluştu. Lütfen tekrar giriş yapın.");
       
-      // Fallback mock data when API fails
-      setAdminData({
-        "AdSoyad": "Admin Kullanıcı",
-        "Cinsiyet": "1",
-        "DogumTarihi": "2003-08-27T00:00:00.000Z",
-        "TCKimlikNo": "15208996796",
-        "Telefon": "05332118730",
-        "Eposta": "admin@school.com",
-        "Bolum": "Yönetim",
-        "Fotograf": `admin_${Math.floor(Math.random() * 1000)}.jpg`
-      });
+      // Oturumu sonlandır
+      setTimeout(() => {
+        clearSession();
+      }, 2000);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -75,7 +76,7 @@ const AdminDashboard = () => {
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('tr-TR');
+    return new Date(dateString).toLocaleDateString("tr-TR");
   };
 
   const getGenderText = (gender) => {
@@ -84,62 +85,87 @@ const AdminDashboard = () => {
 
   const getUserPhotoUrl = () => {
     try {
-      console.log('=== ADMIN PHOTO DEBUG ===');
-      console.log('adminData mevcut mu:', adminData ? 'EVET' : 'HAYIR');
-      
+      console.log("=== ADMIN PHOTO DEBUG ===");
+      console.log("adminData mevcut mu:", adminData ? "EVET" : "HAYIR");
+
       if (!adminData) {
-        console.log('Admin verisi yok!');
+        console.log("Admin verisi yok!");
         return null;
       }
-      
-      console.log('adminData?.Fotograf:', adminData?.Fotograf);
-      
+
+      console.log("adminData?.Fotograf:", adminData?.Fotograf);
+
       if (!adminData?.Fotograf) {
-        console.log('!!! FOTO YOK - NULL DÖNÜYORUM !!!');
+        console.log("!!! FOTO YOK - NULL DÖNÜYORUM !!!");
         return null;
       }
-      
+
       // Fotoğraf string'i geldi mi kontrol et
-      if (typeof adminData.Fotograf !== 'string' || adminData.Fotograf.trim() === '') {
-        console.log('!!! FOTO STRING DEĞİL VEYA BOŞ - NULL DÖNÜYORUM !!!');
+      if (
+        typeof adminData.Fotograf !== "string" ||
+        adminData.Fotograf.trim() === ""
+      ) {
+        console.log("!!! FOTO STRING DEĞİL VEYA BOŞ - NULL DÖNÜYORUM !!!");
         return null;
       }
-      
+
       const photoUrl = getUploadUrl(adminData.Fotograf);
-      console.log('Generated Admin Photo URL:', photoUrl);
-      console.log('=== END ADMIN DEBUG ===');
-      
+      console.log("Generated Admin Photo URL:", photoUrl);
+      console.log("=== END ADMIN DEBUG ===");
+
       // URL oluşturulduysa kullan, yoksa null döndür
       if (!photoUrl) {
-        console.log('!!! PHOTO URL OLUŞTURULAMADI !!!');
+        console.log("!!! PHOTO URL OLUŞTURULAMADI !!!");
         return null;
       }
-      
+
       return photoUrl;
     } catch (error) {
-      console.log('!!! HATA OLUŞTU !!!', error);
+      console.log("!!! HATA OLUŞTU !!!", error);
       return null;
     }
   };
 
   if (loading) {
     return (
-      <View style={[styles.loadingContainer, { backgroundColor: theme.background }]}>
+      <View
+        style={[styles.loadingContainer, { backgroundColor: theme.background }]}
+      >
         <ActivityIndicator size="large" color={theme.accent} />
-        <Text style={[styles.loadingText, { color: theme.text }]}>Veriler yükleniyor...</Text>
+        <Text style={[styles.loadingText, { color: theme.text }]}>
+          Veriler yükleniyor...
+        </Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View
+        style={[styles.loadingContainer, { backgroundColor: theme.background }]}
+      >
+        <Text style={[styles.errorText, { color: theme.danger }]}>
+          {error}
+        </Text>
       </View>
     );
   }
 
   if (!adminData) {
     return (
-      <View style={[styles.loadingContainer, { backgroundColor: theme.background }]}>
-        <Text style={[styles.loadingText, { color: theme.text }]}>Kullanıcı bilgileri bulunamadı</Text>
-        <TouchableOpacity 
+      <View
+        style={[styles.loadingContainer, { backgroundColor: theme.background }]}
+      >
+        <Text style={[styles.loadingText, { color: theme.text }]}>
+          Kullanıcı bilgileri bulunamadı
+        </Text>
+        <TouchableOpacity
           style={[styles.retryButton, { backgroundColor: theme.accent }]}
           onPress={fetchAdminData}
         >
-          <Text style={[styles.retryText, { color: theme.primary }]}>Tekrar Dene</Text>
+          <Text style={[styles.retryText, { color: theme.primary }]}>
+            Tekrar Dene
+          </Text>
         </TouchableOpacity>
       </View>
     );
@@ -147,32 +173,37 @@ const AdminDashboard = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
+      {/* Header kısmını eski haline getir */}
       <View style={[styles.header, { borderBottomColor: theme.border }]}>
-        <TouchableOpacity 
-          style={styles.menuButton}
-          onPress={() => setMenuVisible(true)}
-        >
+        <TouchableOpacity style={styles.menuButton} onPress={openMenu}>
           <Text style={[styles.menuIcon, { color: theme.text }]}>☰</Text>
         </TouchableOpacity>
-        
-        <Text style={[styles.headerTitle, { color: theme.text }]}>Admin Paneli</Text>
-        
+
+        <Text style={[styles.headerTitle, { color: theme.text }]}>
+          Admin Paneli
+        </Text>
+
         <ThemeToggle />
       </View>
 
-      <RefreshableScrollView 
-        style={styles.content} 
+      <RefreshableScrollView
+        style={styles.content}
         showsVerticalScrollIndicator={false}
         refreshing={refreshing}
         onRefresh={handleRefresh}
       >
-        <View style={[styles.profileCard, { backgroundColor: theme.card, borderColor: theme.accent }]}>
+        <View
+          style={[
+            styles.profileCard,
+            { backgroundColor: theme.card, borderColor: theme.accent },
+          ]}
+        >
           <View style={styles.avatarContainer}>
             {getUserPhotoUrl() ? (
-              <Image 
+              <Image
                 source={{ uri: getUserPhotoUrl() }}
-                style={styles.userPhoto}
-                defaultSource={require('../../../assets/icon.png')}
+                style={[styles.userPhoto, { borderColor: theme.accent }]}
+                defaultSource={require("../../../assets/icon.png")}
               />
             ) : (
               <View style={[styles.avatar, { backgroundColor: theme.accent }]}>
@@ -180,66 +211,106 @@ const AdminDashboard = () => {
               </View>
             )}
           </View>
-          
-          <Text style={[styles.name, { color: theme.text }]}>{adminData?.AdSoyad}</Text>
-          <Text style={[styles.department, { color: theme.text }]}>{adminData?.Bolum}</Text>
-          
+
+          <Text style={[styles.name, { color: theme.text }]}>
+            {adminData?.AdSoyad}
+          </Text>
+          <Text style={[styles.department, { color: theme.text }]}>
+            {adminData?.Bolum}
+          </Text>
+
           {schoolCode && (
-            <View style={[styles.schoolBadge, { backgroundColor: theme.accent }]}>
-              <Text style={[styles.schoolText, { color: theme.primary }]}>🏫 {schoolCode}</Text>
+            <View
+              style={[styles.schoolBadge, { backgroundColor: theme.accent }]}
+            >
+              <Text style={[styles.schoolText, { color: isDark ? theme.background : theme.primary }]}>
+                🏫 {schoolCode}
+              </Text>
             </View>
           )}
         </View>
 
         <View style={[styles.infoCard, { backgroundColor: theme.card }]}>
-          <Text style={[styles.cardTitle, { color: theme.text }]}>👤 Kişisel Bilgiler</Text>
-          
+          <Text style={[styles.cardTitle, { color: theme.text }]}>
+            👤 Kişisel Bilgiler
+          </Text>
+
           <View style={[styles.infoRow, { borderBottomColor: theme.border }]}>
-            <Text style={[styles.infoLabel, { color: theme.text }]}>📧 E-posta:</Text>
-            <Text style={[styles.infoValue, { color: theme.text }]}>{adminData?.Eposta}</Text>
+            <Text style={[styles.infoLabel, { color: theme.text }]}>
+              📧 E-posta:
+            </Text>
+            <Text style={[styles.infoValue, { color: theme.text }]}>
+              {adminData?.Eposta}
+            </Text>
           </View>
-          
+
           <View style={[styles.infoRow, { borderBottomColor: theme.border }]}>
-            <Text style={[styles.infoLabel, { color: theme.text }]}>📱 Telefon:</Text>
-            <Text style={[styles.infoValue, { color: theme.text }]}>{adminData?.Telefon}</Text>
+            <Text style={[styles.infoLabel, { color: theme.text }]}>
+              📱 Telefon:
+            </Text>
+            <Text style={[styles.infoValue, { color: theme.text }]}>
+              {adminData?.Telefon}
+            </Text>
           </View>
-          
+
           <View style={[styles.infoRow, { borderBottomColor: theme.border }]}>
-            <Text style={[styles.infoLabel, { color: theme.text }]}>🆔 TC Kimlik:</Text>
-            <Text style={[styles.infoValue, { color: theme.text }]}>{adminData?.TCKimlikNo}</Text>
+            <Text style={[styles.infoLabel, { color: theme.text }]}>
+              🆔 TC Kimlik:
+            </Text>
+            <Text style={[styles.infoValue, { color: theme.text }]}>
+              {adminData?.TCKimlikNo}
+            </Text>
           </View>
-          
+
           <View style={[styles.infoRow, { borderBottomColor: theme.border }]}>
-            <Text style={[styles.infoLabel, { color: theme.text }]}>👤 Cinsiyet:</Text>
-            <Text style={[styles.infoValue, { color: theme.text }]}>{getGenderText(adminData?.Cinsiyet)}</Text>
+            <Text style={[styles.infoLabel, { color: theme.text }]}>
+              👤 Cinsiyet:
+            </Text>
+            <Text style={[styles.infoValue, { color: theme.text }]}>
+              {getGenderText(adminData?.Cinsiyet)}
+            </Text>
           </View>
-          
+
           <View style={[styles.infoRow, { borderBottomColor: theme.border }]}>
-            <Text style={[styles.infoLabel, { color: theme.text }]}>🎂 Doğum Tarihi:</Text>
-            <Text style={[styles.infoValue, { color: theme.text }]}>{formatDate(adminData?.DogumTarihi)}</Text>
+            <Text style={[styles.infoLabel, { color: theme.text }]}>
+              🎂 Doğum Tarihi:
+            </Text>
+            <Text style={[styles.infoValue, { color: theme.text }]}>
+              {formatDate(adminData?.DogumTarihi)}
+            </Text>
           </View>
         </View>
 
         <View style={styles.statsContainer}>
-          <View style={[styles.statCard, { backgroundColor: theme.card, borderColor: theme.accent }]}>
+          <View
+            style={[
+              styles.statCard,
+              { backgroundColor: theme.card, borderColor: theme.border },
+            ]}
+          >
             <Text style={styles.statIcon}>👥</Text>
-            <Text style={[styles.statTitle, { color: theme.text }]}>Kullanıcılar</Text>
+            <Text style={[styles.statTitle, { color: theme.text }]}>
+              Kullanıcılar
+            </Text>
             <Text style={[styles.statValue, { color: theme.text }]}>-</Text>
           </View>
-          
-          <View style={[styles.statCard, { backgroundColor: theme.card, borderColor: theme.accent }]}>
+
+          <View
+            style={[
+              styles.statCard,
+              { backgroundColor: theme.card, borderColor: theme.border },
+            ]}
+          >
             <Text style={styles.statIcon}>🏫</Text>
-            <Text style={[styles.statTitle, { color: theme.text }]}>Okullar</Text>
+            <Text style={[styles.statTitle, { color: theme.text }]}>
+              Okullar
+            </Text>
             <Text style={[styles.statValue, { color: theme.text }]}>-</Text>
           </View>
         </View>
       </RefreshableScrollView>
 
-      <SlideMenu 
-        visible={menuVisible}
-        onClose={() => setMenuVisible(false)}
-        onNavigate={(screen) => navigation.navigate(screen)}
-      />
+      {/* SlideMenu bileşeni kaldırıldı - döngüsel bağımlılık çözümü */}
     </View>
   );
 };
@@ -250,8 +321,8 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   loadingText: {
     fontSize: 16,
@@ -265,12 +336,12 @@ const styles = StyleSheet.create({
   },
   retryText: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 20,
     paddingTop: 60,
     paddingBottom: 20,
@@ -281,11 +352,11 @@ const styles = StyleSheet.create({
   },
   menuIcon: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   content: {
     flex: 1,
@@ -295,7 +366,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 20,
     padding: 25,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 20,
   },
   avatarContainer: {
@@ -305,22 +376,21 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   userPhoto: {
     width: 80,
     height: 80,
     borderRadius: 40,
     borderWidth: 3,
-    borderColor: '#FFD60A',
   },
   avatarText: {
     fontSize: 40,
   },
   name: {
     fontSize: 22,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 5,
   },
   department: {
@@ -335,7 +405,7 @@ const styles = StyleSheet.create({
   },
   schoolText: {
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   infoCard: {
     borderRadius: 15,
@@ -344,13 +414,13 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 15,
   },
   infoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: 8,
     borderBottomWidth: 1,
   },
@@ -361,19 +431,19 @@ const styles = StyleSheet.create({
   },
   infoValue: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
     flex: 1,
-    textAlign: 'right',
+    textAlign: "right",
   },
   statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   statCard: {
     borderWidth: 1,
     borderRadius: 15,
     padding: 20,
-    alignItems: 'center',
+    alignItems: "center",
     flex: 1,
     marginHorizontal: 5,
   },
@@ -388,8 +458,14 @@ const styles = StyleSheet.create({
   },
   statValue: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
+  },
+  errorText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
+    padding: 20,
   },
 });
 
-export default AdminDashboard; 
+export default AdminDashboard;

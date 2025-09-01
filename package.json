@@ -9,7 +9,8 @@
     "web": "expo start --web",
     "upload": "node github-upload.js",
     "upload-bash": "bash upload.sh",
-    "github": "bash upload.sh"
+    "github": "bash upload.sh",
+    "health:check": "node tools/health/checkup.js"
   },
   "dependencies": {
     "@react-native-picker/picker": "2.11.1",
@@ -17,13 +18,19 @@
     "@react-navigation/native-stack": "^7.3.25",
     "axios": "^1.11.0",
     "expo": "~53.0.22",
+    "expo-image-picker": "^16.1.4",
     "expo-secure-store": "~14.2.4",
     "expo-status-bar": "~2.2.3",
     "react": "19.0.0",
     "react-native": "0.79.6"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "archiver": "^7.0.1",
+    "eslint": "^9.34.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-native": "^5.0.0",
+    "prettier": "^3.6.2"
   },
   "private": true
 }

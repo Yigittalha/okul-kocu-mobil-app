@@ -1,23 +1,30 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import api, { getUploadUrl, fetchAllStudents } from '../../lib/api';
-import { getToken } from '../../lib/storage';
-import { darkBlue, yellow } from '../../constants/colors';
-import { SessionContext } from '../../state/session';
-import { useTheme } from '../../state/theme';
-import { SlideMenu } from '../../navigation/AppDrawer';
-import ThemeToggle from '../../components/ThemeToggle';
-import RefreshableScrollView from '../../components/RefreshableScrollView';
+import React, { useContext, useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
+  ScrollView,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import api, { getUploadUrl, fetchAllStudents } from "../../lib/api";
+import { SessionContext } from "../../state/session";
+import { useTheme } from "../../state/theme";
+import { useSlideMenu } from "../../navigation/SlideMenuContext";
+import ThemeToggle from "../../ui/theme/ThemeToggle";
+import RefreshableScrollView from "../../components/RefreshableScrollView";
 
 const ParentDashboard = () => {
   const navigation = useNavigation();
-  const { schoolCode } = useContext(SessionContext);
+  const { schoolCode, clearSession } = useContext(SessionContext);
   const { theme, isDark, toggleTheme } = useTheme();
+  const { openMenu } = useSlideMenu();
   const [studentData, setStudentData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [menuVisible, setMenuVisible] = useState(false);
+  const [error, setError] = useState(null);
 
   // Fetch data only once on mount
   useEffect(() => {
@@ -27,72 +34,36 @@ const ParentDashboard = () => {
 
   const fetchStudentData = async () => {
     try {
-      console.log('🚀 Fetching student data using fetchAllStudents API...');
-      const data = await fetchAllStudents();
-      
+      console.log("🚀 Fetching student data using fetchAllStudents API...");
+      const data = await fetchAllStudents(true); // showErrors true olarak ayarlandı
+
       if (data && data.length > 0) {
-        console.log('✅ Student data fetched successfully!');
-        console.log('📋 Found', data.length, 'students');
-        
+        console.log("✅ Student data fetched successfully!");
+        console.log("📋 Found", data.length, "students");
+
         // Use the first student from the response
         const studentInfo = data[0];
-        console.log('📋 Using student data:', studentInfo);
-        
+        console.log("📋 Using student data:", studentInfo);
+
         setStudentData(studentInfo);
+        setError(null); // Hata durumunu temizle
       } else {
-        console.log('⚠️ No student data returned, using mock data');
-        // Fallback mock data when API fails
-        setStudentData({
-          "Sinif": "5-A",
-          "OgrenciNumara": "30",
-          "AdSoyad": "Öğrenci Kullanıcı",
-          "TCKimlikNo": "67894567835",
-          "Cinsiyet": false,
-          "DogumTarihi": "2013-11-08T00:00:00.000Z",
-          "AnneAdSoyad": "Anne Adı",
-          "BabaAdSoyad": "Baba Adı",
-          "VeliDurum": true,
-          "Sag": "Var",
-          "Engel": false,
-          "AnneEgitim": "Ortaokul",
-          "BabaEgitim": "Lise",
-          "AnneMeslek": "Ev Hanımı",
-          "BabaMeslek": "Esnaf",
-          "SuregenRahatsizlik": "Yok",
-          "AylikGelir": "15000",
-          "AnneTel": "05009995566",
-          "BabaTel": "05001006677",
-          "Fotograf": "default.png",
-          "OgrenciId": 63
-        });
+        console.log("⚠️ No student data returned");
+        setError("Öğrenci bilgileri alınamadı. Lütfen tekrar giriş yapın.");
+        
+        // Oturumu sonlandır
+        setTimeout(() => {
+          clearSession();
+        }, 2000);
       }
     } catch (error) {
-      console.log('❌ Student data fetch error:', error);
+      console.log("❌ Student data fetch error:", error);
+      setError("Sistem hatası oluştu. Lütfen tekrar giriş yapın.");
       
-      // Fallback mock data when API fails
-      setStudentData({
-        "Sinif": "5-A",
-        "OgrenciNumara": "30",
-        "AdSoyad": "Öğrenci Kullanıcı",
-        "TCKimlikNo": "67894567835",
-        "Cinsiyet": false,
-        "DogumTarihi": "2013-11-08T00:00:00.000Z",
-        "AnneAdSoyad": "Anne Adı",
-        "BabaAdSoyad": "Baba Adı",
-        "VeliDurum": true,
-        "Sag": "Var",
-        "Engel": false,
-        "AnneEgitim": "Ortaokul",
-        "BabaEgitim": "Lise",
-        "AnneMeslek": "Ev Hanımı",
-        "BabaMeslek": "Esnaf",
-        "SuregenRahatsizlik": "Yok",
-        "AylikGelir": "15000",
-        "AnneTel": "05009995566",
-        "BabaTel": "05001006677",
-        "Fotograf": "default.png",
-        "OgrenciId": 63
-      });
+      // Oturumu sonlandır
+      setTimeout(() => {
+        clearSession();
+      }, 2000);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -105,7 +76,7 @@ const ParentDashboard = () => {
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('tr-TR');
+    return new Date(dateString).toLocaleDateString("tr-TR");
   };
 
   const getGenderText = (gender) => {
@@ -114,64 +85,89 @@ const ParentDashboard = () => {
 
   const getStudentPhotoUrl = () => {
     try {
-      console.log('=== STUDENT PHOTO DEBUG ===');
-      console.log('studentData mevcut mu:', studentData ? 'EVET' : 'HAYIR');
-      
+      console.log("=== STUDENT PHOTO DEBUG ===");
+      console.log("studentData mevcut mu:", studentData ? "EVET" : "HAYIR");
+
       if (!studentData) {
-        console.log('Öğrenci verisi yok!');
+        console.log("Öğrenci verisi yok!");
         return null;
       }
-      
-      console.log('studentData?.Fotograf:', studentData?.Fotograf);
-      
+
+      console.log("studentData?.Fotograf:", studentData?.Fotograf);
+
       if (!studentData?.Fotograf) {
-        console.log('!!! FOTO YOK - NULL DÖNÜYORUM !!!');
+        console.log("!!! FOTO YOK - NULL DÖNÜYORUM !!!");
         return null;
       }
-      
+
       // Fotoğraf string'i geldi mi kontrol et
-      if (typeof studentData.Fotograf !== 'string' || studentData.Fotograf.trim() === '') {
-        console.log('!!! FOTO STRING DEĞİL VEYA BOŞ - NULL DÖNÜYORUM !!!');
+      if (
+        typeof studentData.Fotograf !== "string" ||
+        studentData.Fotograf.trim() === ""
+      ) {
+        console.log("!!! FOTO STRING DEĞİL VEYA BOŞ - NULL DÖNÜYORUM !!!");
         return null;
       }
-      
-      console.log('getUploadUrl FONKSİYONUNU ÇAĞIRIYORUM...');
+
+      console.log("getUploadUrl FONKSİYONUNU ÇAĞIRIYORUM...");
       const photoUrl = getUploadUrl(studentData.Fotograf);
-      console.log('FONKSİYON ÇAĞRILDI. SONUÇ:');
-      console.log('Generated Student Photo URL:', photoUrl);
-      console.log('=== END STUDENT DEBUG ===');
-      
+      console.log("FONKSİYON ÇAĞRILDI. SONUÇ:");
+      console.log("Generated Student Photo URL:", photoUrl);
+      console.log("=== END STUDENT DEBUG ===");
+
       // URL oluşturulduysa kullan, yoksa null döndür
       if (!photoUrl) {
-        console.log('!!! PHOTO URL OLUŞTURULAMADI !!!');
+        console.log("!!! PHOTO URL OLUŞTURULAMADI !!!");
         return null;
       }
-      
+
       return photoUrl;
     } catch (error) {
-      console.log('!!! HATA OLUŞTU !!!', error);
+      console.log("!!! HATA OLUŞTU !!!", error);
       return null;
     }
   };
 
   if (loading) {
     return (
-      <View style={[styles.loadingContainer, { backgroundColor: theme.background }]}>
+      <View
+        style={[styles.loadingContainer, { backgroundColor: theme.background }]}
+      >
         <ActivityIndicator size="large" color={theme.accent} />
-        <Text style={[styles.loadingText, { color: theme.text }]}>Öğrenci bilgileri yükleniyor...</Text>
+        <Text style={[styles.loadingText, { color: theme.text }]}>
+          Veriler yükleniyor...
+        </Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View
+        style={[styles.loadingContainer, { backgroundColor: theme.background }]}
+      >
+        <Text style={[styles.errorText, { color: theme.danger }]}>
+          {error}
+        </Text>
       </View>
     );
   }
 
   if (!studentData) {
     return (
-      <View style={[styles.loadingContainer, { backgroundColor: theme.background }]}>
-        <Text style={[styles.loadingText, { color: theme.text }]}>Öğrenci bilgileri bulunamadı</Text>
-        <TouchableOpacity 
+      <View
+        style={[styles.loadingContainer, { backgroundColor: theme.background }]}
+      >
+        <Text style={[styles.loadingText, { color: theme.text }]}>
+          Öğrenci bilgileri bulunamadı
+        </Text>
+        <TouchableOpacity
           style={[styles.retryButton, { backgroundColor: theme.accent }]}
           onPress={fetchStudentData}
         >
-          <Text style={[styles.retryText, { color: theme.primary }]}>Tekrar Dene</Text>
+          <Text style={[styles.retryText, { color: theme.primary }]}>
+            Tekrar Dene
+          </Text>
         </TouchableOpacity>
       </View>
     );
@@ -180,15 +176,17 @@ const ParentDashboard = () => {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={[styles.header, { borderBottomColor: theme.border }]}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.menuButton}
-          onPress={() => setMenuVisible(true)}
+          onPress={() => openMenu("ParentDashboard")}
         >
           <Text style={[styles.menuIcon, { color: theme.text }]}>☰</Text>
         </TouchableOpacity>
-        
-        <Text style={[styles.headerTitle, { color: theme.text }]}>Öğrenci Bilgileri</Text>
-        
+
+        <Text style={[styles.headerTitle, { color: theme.text }]}>
+          Öğrenci Bilgileri
+        </Text>
+
         <ThemeToggle />
       </View>
 
@@ -198,136 +196,239 @@ const ParentDashboard = () => {
         refreshing={refreshing}
         onRefresh={handleRefresh}
       >
-        <View style={[styles.studentCard, { backgroundColor: theme.card, borderColor: theme.accent }]}>
+        <View
+          style={[
+            styles.studentCard,
+            { backgroundColor: theme.card, borderColor: theme.accent },
+          ]}
+        >
           {/* Student photo display */}
           <View style={styles.avatarContainer}>
             {(() => {
               const photoUrl = getStudentPhotoUrl();
-              console.log('Student photo URL for rendering:', photoUrl);
-              
+              console.log("Student photo URL for rendering:", photoUrl);
+
               if (photoUrl) {
                 return (
-                  <Image 
-                    source={{ uri: photoUrl }}
-                    style={styles.userPhoto}
-                  />
+                  <Image source={{ uri: photoUrl }} style={styles.userPhoto} />
                 );
               } else {
                 return (
-                  <View style={[styles.avatar, { backgroundColor: theme.accent }]}>
+                  <View
+                    style={[styles.avatar, { backgroundColor: theme.accent }]}
+                  >
                     <Text style={styles.avatarText}>
-                      {getGenderText(studentData?.Cinsiyet) === "Erkek" ? "👦" : "👧"}
+                      {getGenderText(studentData?.Cinsiyet) === "Erkek"
+                        ? "👦"
+                        : "👧"}
                     </Text>
                   </View>
                 );
               }
             })()}
           </View>
-          
-          <Text style={[styles.studentName, { color: theme.text }]}>{studentData?.AdSoyad}</Text>
-          <Text style={[styles.classInfo, { color: theme.text }]}>📚 {studentData?.Sinif} - No: {studentData?.OgrenciNumara}</Text>
-          
+
+          <Text style={[styles.studentName, { color: theme.text }]}>
+            {studentData?.AdSoyad}
+          </Text>
+          <Text style={[styles.classInfo, { color: theme.text }]}>
+            📚 {studentData?.Sinif} - No: {studentData?.OgrenciNumara}
+          </Text>
+
           {schoolCode && (
-            <View style={[styles.schoolBadge, { backgroundColor: theme.accent }]}>
-              <Text style={[styles.schoolText, { color: theme.primary }]}>🏫 {schoolCode}</Text>
+            <View
+              style={[styles.schoolBadge, { backgroundColor: theme.accent }]}
+            >
+              <Text style={[styles.schoolText, { color: theme.primary }]}>
+                🏫 {schoolCode}
+              </Text>
             </View>
           )}
         </View>
 
         <View style={[styles.infoCard, { backgroundColor: theme.card }]}>
-          <Text style={[styles.cardTitle, { color: theme.text }]}>👤 Öğrenci Bilgileri</Text>
-          
+          <Text style={[styles.cardTitle, { color: theme.text }]}>
+            👤 Öğrenci Bilgileri
+          </Text>
+
           <View style={[styles.infoRow, { borderBottomColor: theme.border }]}>
-            <Text style={[styles.infoLabel, { color: theme.text }]}>🆔 TC Kimlik:</Text>
-            <Text style={[styles.infoValue, { color: theme.text }]}>{studentData?.TCKimlikNo}</Text>
+            <Text style={[styles.infoLabel, { color: theme.text }]}>
+              🆔 TC Kimlik:
+            </Text>
+            <Text style={[styles.infoValue, { color: theme.text }]}>
+              {studentData?.TCKimlikNo}
+            </Text>
           </View>
-          
+
           <View style={[styles.infoRow, { borderBottomColor: theme.border }]}>
-            <Text style={[styles.infoLabel, { color: theme.text }]}>👤 Cinsiyet:</Text>
-            <Text style={[styles.infoValue, { color: theme.text }]}>{getGenderText(studentData?.Cinsiyet)}</Text>
+            <Text style={[styles.infoLabel, { color: theme.text }]}>
+              👤 Cinsiyet:
+            </Text>
+            <Text style={[styles.infoValue, { color: theme.text }]}>
+              {getGenderText(studentData?.Cinsiyet)}
+            </Text>
           </View>
-          
+
           <View style={[styles.infoRow, { borderBottomColor: theme.border }]}>
-            <Text style={[styles.infoLabel, { color: theme.text }]}>🎂 Doğum Tarihi:</Text>
-            <Text style={[styles.infoValue, { color: theme.text }]}>{formatDate(studentData?.DogumTarihi)}</Text>
+            <Text style={[styles.infoLabel, { color: theme.text }]}>
+              🎂 Doğum Tarihi:
+            </Text>
+            <Text style={[styles.infoValue, { color: theme.text }]}>
+              {formatDate(studentData?.DogumTarihi)}
+            </Text>
           </View>
-          
+
           <View style={[styles.infoRow, { borderBottomColor: theme.border }]}>
-            <Text style={[styles.infoLabel, { color: theme.text }]}>🏥 Sağlık Durumu:</Text>
-            <Text style={[styles.infoValue, { color: theme.text }]}>{studentData?.Sag}</Text>
+            <Text style={[styles.infoLabel, { color: theme.text }]}>
+              🏥 Sağlık Durumu:
+            </Text>
+            <Text style={[styles.infoValue, { color: theme.text }]}>
+              {studentData?.Sag}
+            </Text>
           </View>
-          
+
           <View style={[styles.infoRow, { borderBottomColor: theme.border }]}>
-            <Text style={[styles.infoLabel, { color: theme.text }]}>♿ Engel Durumu:</Text>
-            <Text style={[styles.infoValue, { color: theme.text }]}>{studentData?.Engel ? "Var" : "Yok"}</Text>
+            <Text style={[styles.infoLabel, { color: theme.text }]}>
+              ♿ Engel Durumu:
+            </Text>
+            <Text style={[styles.infoValue, { color: theme.text }]}>
+              {studentData?.Engel ? "Var" : "Yok"}
+            </Text>
           </View>
         </View>
 
         <View style={[styles.familyCard, { backgroundColor: theme.card }]}>
-          <Text style={[styles.cardTitle, { color: theme.text }]}>👨‍👩‍👧‍👦 Aile Bilgileri</Text>
-          
-          <View style={[styles.parentSection, { borderBottomColor: theme.border }]}>
-            <Text style={[styles.parentTitle, { color: theme.text }]}>👩 Anne Bilgileri</Text>
+          <Text style={[styles.cardTitle, { color: theme.text }]}>
+            👨‍👩‍👧‍👦 Aile Bilgileri
+          </Text>
+
+          <View
+            style={[styles.parentSection, { borderBottomColor: theme.border }]}
+          >
+            <Text style={[styles.parentTitle, { color: theme.text }]}>
+              👩 Anne Bilgileri
+            </Text>
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.text }]}>📝 Ad Soyad:</Text>
-              <Text style={[styles.infoValue, { color: theme.text }]}>{studentData?.AnneAdSoyad}</Text>
+              <Text style={[styles.infoLabel, { color: theme.text }]}>
+                📝 Ad Soyad:
+              </Text>
+              <Text style={[styles.infoValue, { color: theme.text }]}>
+                {studentData?.AnneAdSoyad}
+              </Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.text }]}>🎓 Eğitim:</Text>
-              <Text style={[styles.infoValue, { color: theme.text }]}>{studentData?.AnneEgitim}</Text>
+              <Text style={[styles.infoLabel, { color: theme.text }]}>
+                🎓 Eğitim:
+              </Text>
+              <Text style={[styles.infoValue, { color: theme.text }]}>
+                {studentData?.AnneEgitim}
+              </Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.text }]}>💼 Meslek:</Text>
-              <Text style={[styles.infoValue, { color: theme.text }]}>{studentData?.AnneMeslek}</Text>
+              <Text style={[styles.infoLabel, { color: theme.text }]}>
+                💼 Meslek:
+              </Text>
+              <Text style={[styles.infoValue, { color: theme.text }]}>
+                {studentData?.AnneMeslek}
+              </Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.text }]}>📱 Telefon:</Text>
-              <Text style={[styles.infoValue, { color: theme.text }]}>{studentData?.AnneTel}</Text>
+              <Text style={[styles.infoLabel, { color: theme.text }]}>
+                📱 Telefon:
+              </Text>
+              <Text style={[styles.infoValue, { color: theme.text }]}>
+                {studentData?.AnneTel}
+              </Text>
             </View>
           </View>
 
-          <View style={[styles.parentSection, { borderBottomColor: theme.border }]}>
-            <Text style={[styles.parentTitle, { color: theme.text }]}>👨 Baba Bilgileri</Text>
+          <View
+            style={[styles.parentSection, { borderBottomColor: theme.border }]}
+          >
+            <Text style={[styles.parentTitle, { color: theme.text }]}>
+              👨 Baba Bilgileri
+            </Text>
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.text }]}>📝 Ad Soyad:</Text>
-              <Text style={[styles.infoValue, { color: theme.text }]}>{studentData?.BabaAdSoyad}</Text>
+              <Text style={[styles.infoLabel, { color: theme.text }]}>
+                📝 Ad Soyad:
+              </Text>
+              <Text style={[styles.infoValue, { color: theme.text }]}>
+                {studentData?.BabaAdSoyad}
+              </Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.text }]}>🎓 Eğitim:</Text>
-              <Text style={[styles.infoValue, { color: theme.text }]}>{studentData?.BabaEgitim}</Text>
+              <Text style={[styles.infoLabel, { color: theme.text }]}>
+                🎓 Eğitim:
+              </Text>
+              <Text style={[styles.infoValue, { color: theme.text }]}>
+                {studentData?.BabaEgitim}
+              </Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.text }]}>💼 Meslek:</Text>
-              <Text style={[styles.infoValue, { color: theme.text }]}>{studentData?.BabaMeslek}</Text>
+              <Text style={[styles.infoLabel, { color: theme.text }]}>
+                💼 Meslek:
+              </Text>
+              <Text style={[styles.infoValue, { color: theme.text }]}>
+                {studentData?.BabaMeslek}
+              </Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.text }]}>📱 Telefon:</Text>
-              <Text style={[styles.infoValue, { color: theme.text }]}>{studentData?.BabaTel}</Text>
+              <Text style={[styles.infoLabel, { color: theme.text }]}>
+                📱 Telefon:
+              </Text>
+              <Text style={[styles.infoValue, { color: theme.text }]}>
+                {studentData?.BabaTel}
+              </Text>
             </View>
           </View>
 
           <View style={styles.infoRow}>
-            <Text style={[styles.infoLabel, { color: theme.text }]}>💰 Aylık Gelir:</Text>
-            <Text style={[styles.infoValue, { color: theme.text }]}>{studentData?.AylikGelir} ₺</Text>
+            <Text style={[styles.infoLabel, { color: theme.text }]}>
+              💰 Aylık Gelir:
+            </Text>
+            <Text style={[styles.infoValue, { color: theme.text }]}>
+              {studentData?.AylikGelir} ₺
+            </Text>
           </View>
         </View>
 
-        {studentData?.SuregenRahatsizlik && studentData?.SuregenRahatsizlik !== "Yok" && (
-          <View style={styles.healthCard}>
-            <Text style={[styles.cardTitle, { color: theme.text }]}>🏥 Sağlık Bilgileri</Text>
-            <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.text }]}>⚕️ Süreğen Rahatsızlık:</Text>
-              <Text style={[styles.infoValue, { color: theme.text }]}>{studentData?.SuregenRahatsizlik}</Text>
+        {studentData?.SuregenRahatsizlik &&
+          studentData?.SuregenRahatsizlik !== "Yok" && (
+            <View style={styles.healthCard}>
+              <Text style={[styles.cardTitle, { color: theme.text }]}>
+                🏥 Sağlık Bilgileri
+              </Text>
+              <View style={styles.infoRow}>
+                <Text style={[styles.infoLabel, { color: theme.text }]}>
+                  ⚕️ Süreğen Rahatsızlık:
+                </Text>
+                <Text style={[styles.infoValue, { color: theme.text }]}>
+                  {studentData?.SuregenRahatsizlik}
+                </Text>
+              </View>
             </View>
-          </View>
-        )}
-      </RefreshableScrollView>
+          )}
 
-      <SlideMenu 
-        visible={menuVisible}
-        onClose={() => setMenuVisible(false)}
-        onNavigate={(screen) => navigation.navigate(screen)}
-      />
+        {/* Homework Button */}
+        <TouchableOpacity
+          style={[styles.homeworkButton, { backgroundColor: theme.accent }]}
+          onPress={() => navigation.navigate('StudentHomeworkList')}
+        >
+          <Text style={[styles.homeworkButtonText, { color: '#fff' }]}>
+            📚 Ödevlerimi Görüntüle
+          </Text>
+        </TouchableOpacity>
+
+        {/* Absences Button */}
+        <TouchableOpacity
+          style={[styles.absencesButton, { backgroundColor: theme.warning }]}
+          onPress={() => navigation.navigate('StudentAbsences', { studentInfo: studentData })}
+        >
+          <Text style={[styles.absencesButtonText, { color: '#fff' }]}>
+            📊 Devamsızlık Geçmişi
+          </Text>
+        </TouchableOpacity>
+      </RefreshableScrollView>
     </View>
   );
 };
@@ -338,8 +439,8 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   loadingText: {
     fontSize: 16,
@@ -353,12 +454,12 @@ const styles = StyleSheet.create({
   },
   retryText: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 20,
     paddingTop: 60,
     paddingBottom: 20,
@@ -369,11 +470,11 @@ const styles = StyleSheet.create({
   },
   menuIcon: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   content: {
     flex: 1,
@@ -383,7 +484,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 20,
     padding: 25,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 20,
   },
   avatarContainer: {
@@ -393,22 +494,22 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   userPhoto: {
     width: 80,
     height: 80,
     borderRadius: 40,
     borderWidth: 3,
-    borderColor: '#FFD60A',
+    borderColor: "#FFD60A",
   },
   avatarText: {
     fontSize: 40,
   },
   studentName: {
     fontSize: 22,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 5,
   },
   classInfo: {
@@ -423,7 +524,7 @@ const styles = StyleSheet.create({
   },
   schoolText: {
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   infoCard: {
     borderRadius: 15,
@@ -436,16 +537,16 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   healthCard: {
-    backgroundColor: 'rgba(255, 100, 100, 0.1)',
+    backgroundColor: "rgba(255, 100, 100, 0.1)",
     borderWidth: 1,
-    borderColor: '#ff6b6b',
+    borderColor: "#ff6b6b",
     borderRadius: 15,
     padding: 20,
     marginBottom: 20,
   },
   cardTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 15,
   },
   parentSection: {
@@ -455,13 +556,13 @@ const styles = StyleSheet.create({
   },
   parentTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 10,
   },
   infoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: 6,
   },
   infoLabel: {
@@ -471,10 +572,50 @@ const styles = StyleSheet.create({
   },
   infoValue: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: "600",
     flex: 1,
-    textAlign: 'right',
+    textAlign: "right",
+  },
+  errorText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
+    padding: 20,
+  },
+  homeworkButton: {
+    borderRadius: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  homeworkButtonText: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  absencesButton: {
+    borderRadius: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 12,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  absencesButtonText: {
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });
 
-export default ParentDashboard; 
+export default ParentDashboard;

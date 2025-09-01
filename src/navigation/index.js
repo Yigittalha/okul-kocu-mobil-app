@@ -1,10 +1,13 @@
-import React, { useContext } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { SessionContext } from '../state/session';
-import SchoolSelect from '../app/auth/SchoolSelect';
-import Login from '../app/auth/Login';
-import AppDrawer from './AppDrawer';
+import React, { useContext } from "react";
+import { NavigationContainer, DefaultTheme, DarkTheme } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { SessionContext } from "../state/session";
+import SchoolSelect from "../app/auth/SchoolSelect";
+import Login from "../app/auth/Login";
+import AppDrawer from "./AppDrawer";
+import SlideMenu from "./SlideMenu";
+import { useTheme } from "../state/theme";
+import { darkClassic } from "../constants/colors";
 
 const Stack = createNativeStackNavigator();
 
@@ -19,16 +22,34 @@ function AuthStack() {
 
 export default function RootNavigator() {
   const { isAuthenticated, loading } = useContext(SessionContext);
+  const { isDark, theme } = useTheme();
+
+  // Create custom dark theme with darkClassic colors
+  const customDarkTheme = {
+    ...DarkTheme,
+    colors: {
+      ...DarkTheme.colors,
+      background: darkClassic.background,
+      card: darkClassic.card,
+      text: darkClassic.textPrimary,
+      border: darkClassic.border,
+      notification: darkClassic.accent,
+      primary: darkClassic.accent,
+    },
+  };
 
   if (loading) return null; // Or a splash screen
 
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={isDark ? customDarkTheme : DefaultTheme}>
       {isAuthenticated ? (
-        <AppDrawer />
+        <>
+          <AppDrawer />
+          <SlideMenu />
+        </>
       ) : (
         <AuthStack />
       )}
     </NavigationContainer>
   );
-} 
+}

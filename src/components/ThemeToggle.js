@@ -1,6 +1,13 @@
-import React, { useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
-import { useTheme } from '../state/theme';
+import React, { useRef, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Animated,
+} from "react-native";
+import { useTheme } from "../state/theme";
+import { darkClassic } from "../constants/colors";
 
 const ThemeToggle = ({ style }) => {
   const { isDark, toggleTheme } = useTheme();
@@ -17,67 +24,75 @@ const ThemeToggle = ({ style }) => {
   const togglePosition = animatedValue.interpolate({
     inputRange: [0, 1],
     outputRange: [3, 83], // Adjusted for smaller width: light mode left (3), dark mode right (83)
-    extrapolate: 'clamp',
+    extrapolate: "clamp",
   });
 
   const lightBackgroundColor = animatedValue.interpolate({
     inputRange: [0, 1],
-    outputRange: ['#f0f0f0', '#2a2a2a'],
-    extrapolate: 'clamp',
+    outputRange: ["#f0f0f0", darkClassic.card],
+    extrapolate: "clamp",
   });
 
   const darkBackgroundColor = animatedValue.interpolate({
     inputRange: [0, 1],
-    outputRange: ['#666', '#0D1B2A'],
-    extrapolate: 'clamp',
+    outputRange: ["#666", darkClassic.background],
+    extrapolate: "clamp",
   });
 
   return (
     <View style={[styles.container, style]}>
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.toggleContainer}
         onPress={toggleTheme}
         activeOpacity={0.8}
       >
-        <Animated.View 
+        <Animated.View
           style={[
             styles.toggleBackground,
-            { backgroundColor: lightBackgroundColor }
+            { backgroundColor: lightBackgroundColor },
           ]}
         >
           {/* AYDINLIK MOD Section */}
           <View style={styles.modeSection}>
-            <Text style={[styles.modeText, { 
-              color: isDark ? '#666' : '#333',
-              fontWeight: isDark ? 'normal' : 'bold'
-            }]}>
+            <Text
+              style={[
+                styles.modeText,
+                {
+                  color: isDark ? darkClassic.muted : "#333",
+                  fontWeight: isDark ? "normal" : "bold",
+                },
+              ]}
+            >
               AYDIN
             </Text>
           </View>
 
           {/* KARANLIK MOD Section */}
           <View style={styles.modeSection}>
-            <Text style={[styles.modeText, { 
-              color: isDark ? '#FFD60A' : '#999',
-              fontWeight: isDark ? 'bold' : 'normal'
-            }]}>
+            <Text
+              style={[
+                styles.modeText,
+                {
+                  color: isDark ? darkClassic.accent : "#999",
+                  fontWeight: isDark ? "bold" : "normal",
+                },
+              ]}
+            >
               KARAN
             </Text>
           </View>
 
           {/* Animated Toggle Circle */}
-          <Animated.View 
+          <Animated.View
             style={[
               styles.toggleCircle,
-              { 
+              {
                 left: togglePosition,
-                backgroundColor: isDark ? darkBackgroundColor : '#fff'
-              }
+                backgroundColor: isDark ? darkBackgroundColor : "#fff",
+              },
             ]}
           >
-            <Text style={styles.toggleIcon}>
-              {isDark ? '🌙' : '☀️'}
-            </Text>
+            <Text style={styles.toggleIcon}>{isDark ? "🌙" : "☀️"}</Text>
           </Animated.View>
         </Animated.View>
       </TouchableOpacity>
@@ -87,10 +102,10 @@ const ThemeToggle = ({ style }) => {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   toggleContainer: {
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
@@ -100,29 +115,29 @@ const styles = StyleSheet.create({
     width: 120,
     height: 28,
     borderRadius: 14,
-    flexDirection: 'row',
-    alignItems: 'center',
-    position: 'relative',
+    flexDirection: "row",
+    alignItems: "center",
+    position: "relative",
     paddingHorizontal: 5,
   },
   modeSection: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   modeText: {
     fontSize: 8,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     letterSpacing: 0.2,
   },
   toggleCircle: {
-    position: 'absolute',
+    position: "absolute",
     width: 24,
     height: 24,
     borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
@@ -133,4 +148,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ThemeToggle; 
+export default ThemeToggle;
