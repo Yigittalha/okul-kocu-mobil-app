@@ -59,10 +59,12 @@ const TeacherSchedule = ({ route }) => {
           }
         });
 
-        console.log("✅ Schedule data fetched successfully:", response.data);
+        // TODO: remove before prod
+        // console.log("✅ Schedule data fetched successfully:", response.data);
         // API yanıtını incelemek için detaylı olarak yazdıralım
         if (Array.isArray(response.data) && response.data.length > 0) {
-          console.log("📋 Örnek program kaydı:", JSON.stringify(response.data[0], null, 2));
+          // TODO: remove before prod
+          // console.log("📋 Örnek program kaydı:", JSON.stringify(response.data[0], null, 2));
         }
         
         if (Array.isArray(response.data)) {
@@ -102,10 +104,10 @@ const TeacherSchedule = ({ route }) => {
         }
       } else {
         setError("Öğretmen kimliği bulunamadı");
-        console.log("❌ Teacher ID not found in user data");
+        // console.log("❌ Teacher ID not found in user data");
       }
     } catch (error) {
-      console.log("❌ Error fetching teacher schedule:", error);
+      // console.log("❌ Error fetching teacher schedule:", error);
       setError("Ders programı yüklenirken bir hata oluştu");
       
       if (error.response?.status === 401 || error.response?.data?.message === "Token geçersiz veya süresi dolmuş") {
@@ -123,7 +125,8 @@ const TeacherSchedule = ({ route }) => {
   useEffect(() => {
     // Eğer API'den ders verisi geldiyse onu kullan, yoksa normal schedule'ı çek
     if (apiLessons && Array.isArray(apiLessons)) {
-      console.log('📚 API\'den gelen dersler kullanılıyor:', apiLessons);
+      // TODO: remove before prod
+      // console.log('📚 API\'den gelen dersler kullanılıyor:', apiLessons);
       setSchedule(apiLessons);
       setLoading(false);
     } else {
@@ -141,7 +144,7 @@ const TeacherSchedule = ({ route }) => {
     try {
       // Eğer yoklama seçimleri yoksa, kullanıcıyı uyar
       if (!attendanceSelections) {
-        console.log('⚠️ Yoklama seçimleri bulunamadı. Lütfen önce sınıf ve tarih seçin.');
+        // console.log('⚠️ Yoklama seçimleri bulunamadı. Lütfen önce sınıf ve tarih seçin.');
         return;
       }
 
@@ -153,7 +156,8 @@ const TeacherSchedule = ({ route }) => {
         Ders: lesson.Ders || lesson.ders || lesson.dersAdi
       };
 
-      console.log('📤 Yoklama başlatma isteği gönderiliyor:', {
+      // TODO: remove before prod
+      // console.log('📤 Yoklama başlatma isteği gönderiliyor:', {
         Sinif: payload.Sinif,
         Tarih: payload.Tarih,
         DersSaati: payload.DersSaati,
@@ -169,7 +173,7 @@ const TeacherSchedule = ({ route }) => {
       });
 
       if (response.status === 200) {
-        console.log('✅ Yoklama başlatıldı', response.data);
+        // console.log('✅ Yoklama başlatıldı', response.data);
         
         // Attendance results ekranını göster
         setAttendanceData({
@@ -182,20 +186,20 @@ const TeacherSchedule = ({ route }) => {
           }
         });
         setShowAttendanceResults(true);
-        console.log('✅ AttendanceResults ekranı gösteriliyor');
+        // console.log('✅ AttendanceResults ekranı gösteriliyor');
       }
     } catch (error) {
-      console.log('❌ Yoklama başlatma hatası:', error);
+      // console.log('❌ Yoklama başlatma hatası:', error);
       
       if (error.response?.status === 401) {
-        console.log('🔐 Yetkilendirme hatası - oturum temizleniyor');
+        // console.log('🔐 Yetkilendirme hatası - oturum temizleniyor');
         clearSession();
         navigation.navigate('Login');
       } else if (error.response?.status === 404) {
         // API henüz hazır değil, sadece log
-        console.log('📦 Yoklama isteği hazırlanıyor:', payload);
+        // console.log('📦 Yoklama isteği hazırlanıyor:', payload);
       } else {
-        console.log('🌐 Ağ hatası veya diğer hata:', error.message);
+        // console.log('🌐 Ağ hatası veya diğer hata:', error.message);
       }
     }
   };
