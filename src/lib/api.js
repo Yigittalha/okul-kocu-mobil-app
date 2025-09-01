@@ -7,7 +7,7 @@ import {
 } from "./storage";
 
 // API URL'yi doğrudan burada tanımla - ngrok URL'sini kullan
-const API_BASE_URL = "https://0ecc9eeb16bb.ngrok-free.app/api";
+const API_BASE_URL = "https://f1de2d4e079e.ngrok-free.app/api";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -59,7 +59,7 @@ export const getUploadUrl = (filename) => {
   // API'den gerçek fotoğraf URL'sini oluştur
   try {
     // API URL'yi doğru formatta oluştur
-    const uploadBaseUrl = "https://0ecc9eeb16bb.ngrok-free.app/uploads";
+    const uploadBaseUrl = "https://f1de2d4e079e.ngrok-free.app/uploads";
 
     // URL sonunda slash olup olmadığını kontrol et
     const baseUrlWithSlash = uploadBaseUrl.endsWith("/")
@@ -373,6 +373,210 @@ export const fetchStudentHomework = async (
       console.error("❌ Response status:", error.response.status);
       console.error("❌ Response data:", error.response.data);
       console.error("❌ Response headers:", error.response.headers);
+    } else if (error.request) {
+      console.error(
+        "❌ Request was made but no response received:",
+        error.request,
+      );
+    } else {
+      console.error("❌ Error setting up request:", error.message);
+    }
+
+    if (showErrors) {
+      throw error;
+    } else {
+      return [];
+    }
+  }
+};
+
+// Teacher exams API function
+export const fetchTeacherExams = async (ogretmenID, showErrors = false) => {
+  try {
+    console.log("🔍 Fetching teacher exams for teacher ID:", ogretmenID);
+
+    const response = await api.post("/teacher/examget", {
+      OgretmenID: ogretmenID,
+    });
+
+    console.log("📡 Teacher exams API Response received:", response.status);
+
+    if (response?.data) {
+      console.log("✅ Teacher exams fetched successfully!");
+      console.log("📋 Found", response.data.length, "exam items");
+      return response.data;
+    } else {
+      console.log("⚠️ No exam data returned");
+      return [];
+    }
+  } catch (error) {
+    console.error("❌ Error fetching teacher exams:", error);
+    console.error("❌ Error message:", error.message);
+    if (error.response) {
+      console.error("❌ Response status:", error.response.status);
+      console.error("❌ Response data:", error.response.data);
+    } else if (error.request) {
+      console.error(
+        "❌ Request was made but no response received:",
+        error.request,
+      );
+    } else {
+      console.error("❌ Error setting up request:", error.message);
+    }
+
+    if (showErrors) {
+      throw error;
+    } else {
+      return [];
+    }
+  }
+};
+
+// Teacher homework API function
+export const fetchTeacherHomework = async (ogretmenID, showErrors = false) => {
+  try {
+    console.log("🔍 Fetching teacher homework for teacher ID:", ogretmenID);
+
+    const response = await api.post("/teacher/homework", {
+      OgretmenID: ogretmenID,
+    });
+
+    console.log("📡 Teacher homework API Response received:", response.status);
+
+    if (response?.data) {
+      console.log("✅ Teacher homework fetched successfully!");
+      console.log("📋 Found", response.data.length, "homework items");
+      return response.data;
+    } else {
+      console.log("⚠️ No homework data returned");
+      return [];
+    }
+  } catch (error) {
+    console.error("❌ Error fetching teacher homework:", error);
+    console.error("❌ Error message:", error.message);
+    if (error.response) {
+      console.error("❌ Response status:", error.response.status);
+      console.error("❌ Response data:", error.response.data);
+    } else if (error.request) {
+      console.error(
+        "❌ Request was made but no response received:",
+        error.request,
+      );
+    } else {
+      console.error("❌ Error setting up request:", error.message);
+    }
+
+    if (showErrors) {
+      throw error;
+    } else {
+      return [];
+    }
+  }
+};
+
+// Add exam API function
+export const addExam = async (examData, showErrors = false) => {
+  try {
+    console.log("🔍 Adding exam...");
+
+    const response = await api.post("/teacher/exam/add", examData);
+
+    console.log("📡 Add exam API Response received:", response.status);
+
+    if (response?.data) {
+      console.log("✅ Exam added successfully!");
+      return response.data;
+    } else {
+      console.log("⚠️ No response data returned");
+      return null;
+    }
+  } catch (error) {
+    console.error("❌ Error adding exam:", error);
+    console.error("❌ Error message:", error.message);
+    if (error.response) {
+      console.error("❌ Response status:", error.response.status);
+      console.error("❌ Response data:", error.response.data);
+    } else if (error.request) {
+      console.error(
+        "❌ Request was made but no response received:",
+        error.request,
+      );
+    } else {
+      console.error("❌ Error setting up request:", error.message);
+    }
+
+    if (showErrors) {
+      throw error;
+    } else {
+      return null;
+    }
+  }
+};
+
+// Delete exam API function
+export const deleteExam = async (examID, showErrors = false) => {
+  try {
+    console.log("🔍 Deleting exam with ID:", examID);
+
+    const response = await api.post("/teacher/examdelete", {
+      SinavID: examID,
+    });
+
+    console.log("📡 Delete exam API Response received:", response.status);
+
+    if (response?.data) {
+      console.log("✅ Exam deleted successfully!");
+      return response.data;
+    } else {
+      console.log("⚠️ No response data returned");
+      return null;
+    }
+  } catch (error) {
+    console.error("❌ Error deleting exam:", error);
+    console.error("❌ Error message:", error.message);
+    if (error.response) {
+      console.error("❌ Response status:", error.response.status);
+      console.error("❌ Response data:", error.response.data);
+    } else if (error.request) {
+      console.error(
+        "❌ Request was made but no response received:",
+        error.request,
+      );
+    } else {
+      console.error("❌ Error setting up request:", error.message);
+    }
+
+    if (showErrors) {
+      throw error;
+    } else {
+      return null;
+    }
+  }
+};
+
+// Fetch all classes API function
+export const fetchAllClasses = async (showErrors = false) => {
+  try {
+    console.log("🔍 Fetching all classes...");
+
+    const response = await api.post("/classes/all", {});
+
+    console.log("📡 All classes API Response received:", response.status);
+
+    if (response?.data) {
+      console.log("✅ All classes fetched successfully!");
+      console.log("📋 Found", response.data.length, "class items");
+      return response.data;
+    } else {
+      console.log("⚠️ No class data returned");
+      return [];
+    }
+  } catch (error) {
+    console.error("❌ Error fetching all classes:", error);
+    console.error("❌ Error message:", error.message);
+    if (error.response) {
+      console.error("❌ Response status:", error.response.status);
+      console.error("❌ Response data:", error.response.data);
     } else if (error.request) {
       console.error(
         "❌ Request was made but no response received:",
