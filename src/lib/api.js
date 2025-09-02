@@ -6,8 +6,8 @@ import {
   setRefreshToken,
 } from "./storage";
 
-// API URL'yi doğrudan burada tanımla - ngrok URL'sini kullan
-const API_BASE_URL = "https://1cf0ae3851d3.ngrok-free.app/api";
+// API URL'yi environment'dan al
+const API_BASE_URL = process.env.EXPO_PUBLIC_API || "https://1cf0ae3851d3.ngrok-free.app/api";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -58,8 +58,8 @@ export const getUploadUrl = (filename) => {
 
   // API'den gerçek fotoğraf URL'sini oluştur
   try {
-    // API URL'yi doğru formatta oluştur
-    const uploadBaseUrl = "https://1cf0ae3851d3.ngrok-free.app/uploads";
+    // API URL'yi environment'dan al
+    const uploadBaseUrl = process.env.EXPO_PUBLIC_FOTO_API || "https://1cf0ae3851d3.ngrok-free.app/uploads";
 
     // URL sonunda slash olup olmadığını kontrol et
     const baseUrlWithSlash = uploadBaseUrl.endsWith("/")
@@ -479,7 +479,7 @@ export const addExam = async (examData, showErrors = false) => {
   try {
     console.log("🔍 Adding exam...");
 
-    const response = await api.post("/teacher/exam", examData);
+    const response = await api.post("/teacher/exam/add", examData);
 
     console.log("📡 Add exam API Response received:", response.status);
 
@@ -559,7 +559,7 @@ export const fetchAllClasses = async (showErrors = false) => {
   try {
     console.log("🔍 Fetching all classes...");
 
-    const response = await api.post("/student/classall", {});
+    const response = await api.post("/classes/all", {});
 
     console.log("📡 All classes API Response received:", response.status);
 
