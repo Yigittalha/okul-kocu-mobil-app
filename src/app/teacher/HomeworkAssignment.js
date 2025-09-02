@@ -17,6 +17,7 @@ import { SessionContext } from "../../state/session";
 import { useTheme } from "../../state/theme";
 import { useSlideMenu } from "../../navigation/SlideMenuContext";
 import ThemeToggle from "../../ui/theme/ThemeToggle";
+import { fetchAllClasses } from "../../lib/api";
 
 const HomeworkAssignment = () => {
   const navigation = useNavigation();
@@ -41,10 +42,16 @@ const HomeworkAssignment = () => {
   const [photo, setPhoto] = useState(null);
   const [loading, setLoading] = useState(false);
   const [teacherId, setTeacherId] = useState(null);
+  
+  // Sınıf seçimi için state'ler
+  const [classes, setClasses] = useState([]);
+  const [isClassDropdownOpen, setIsClassDropdownOpen] = useState(false);
+  const [selectedClass, setSelectedClass] = useState("");
 
   // Get teacher ID on component mount
   useEffect(() => {
     fetchTeacherId();
+    fetchClasses();
   }, []);
 
   const fetchTeacherId = async () => {
@@ -68,6 +75,21 @@ const HomeworkAssignment = () => {
       }
     } catch (error) {
       console.log("❌ Teacher ID fetch error:", error);
+    }
+  };
+
+  // Sınıfları API'den çek
+  const fetchClasses = async () => {
+    try {
+      const classesData = await fetchAllClasses();
+      if (classesData && classesData.length > 0) {
+        setClasses(classesData);
+        // İlk sınıfı varsayılan olarak seç
+        setSelectedClass(classesData[0].SinifAdi);
+        setFormData(prev => ({ ...prev, Sinif: classesData[0].SinifAdi }));
+      }
+    } catch (error) {
+      console.log("❌ Classes fetch error:", error);
     }
   };
 
@@ -99,30 +121,25 @@ const HomeworkAssignment = () => {
 
   // Handle form input changes
   const handleInputChange = (field, value) => {
-    setFormData((prev) => {
-      const newData = { ...prev, [field]: value };
+    setFormData((prev) => ({ ...prev, [field]: value }));
 
-      // KayitTuru güncelleme mantığı
-      if (field === "OgrenciNumara") {
-        // Öğrenci numarası girilirse KayitTuru = 1
-        if (value.trim()) {
-          newData.KayitTuru = 1;
-        } else {
-          // Öğrenci numarası boşsa ve sınıf girilmişse KayitTuru = 0
-          newData.KayitTuru = prev.Sinif.trim() ? 0 : 1;
-        }
-      } else if (field === "Sinif") {
-        // Sınıf girilirse ve öğrenci numarası boşsa KayitTuru = 0
-        if (value.trim() && !prev.OgrenciNumara.trim()) {
-          newData.KayitTuru = 0;
-        } else if (!value.trim() && prev.OgrenciNumara.trim()) {
-          // Sınıf boşsa ve öğrenci numarası varsa KayitTuru = 1
-          newData.KayitTuru = 1;
-        }
-      }
+    // Kayıt türünü otomatik güncelle
+    if (field === "OgrenciNumara") {
+      const newData = { ...formData, [field]: value };
+      newData.KayitTuru = prev.Sinif.trim() ? 0 : 1;
+      setFormData(newData);
+    } else if (field === "Sinif") {
+      const newData = { ...formData, [field]: value };
+      newData.KayitTuru = value.trim() ? 0 : 1;
+      setFormData(newData);
+    }
+  };
 
-      return newData;
-    });
+  // Sınıf seçimi handler'ı
+  const handleClassSelect = (className) => {
+    setSelectedClass(className);
+    setFormData(prev => ({ ...prev, Sinif: className }));
+    setIsClassDropdownOpen(false);
   };
 
   // Submit homework assignment
@@ -351,21 +368,76 @@ const HomeworkAssignment = () => {
             <Text style={[styles.inputLabel, { color: theme.text }]}>
               Sınıf
             </Text>
-            <TextInput
+            <TouchableOpacity
               style={[
-                styles.textInput,
+                styles.dropdownButton,
                 {
                   backgroundColor:
                     theme.background === "#f5f5f5" ? "#fff" : theme.surface,
                   borderColor: theme.border,
-                  color: theme.text,
                 },
               ]}
-              value={formData.Sinif}
-              onChangeText={(text) => handleInputChange("Sinif", text)}
-              placeholder="Örn: 5-A"
-              placeholderTextColor={theme.muted}
-            />
+              onPress={() => setIsClassDropdownOpen(!isClassDropdownOpen)}
+            >
+              <Text
+                style={[
+                  styles.dropdownText,
+                  {
+                    color: selectedClass ? theme.text : theme.muted,
+                  },
+                ]}
+              >
+                {selectedClass || "Sınıf seçin..."}
+              </Text>
+              <Text style={[styles.dropdownArrow, { color: theme.text }]}>
+                {isClassDropdownOpen ? "▲" : "▼"}
+              </Text>
+            </TouchableOpacity>
+
+            {/* Sınıf dropdown listesi */}
+            {isClassDropdownOpen && (
+              <View
+                style={[
+                  styles.dropdownList,
+                  {
+                    backgroundColor: theme.surface,
+                    borderColor: theme.border,
+                  },
+                ]}
+              >
+                <ScrollView style={styles.dropdownScroll} nestedScrollEnabled>
+                  {classes.map((classItem) => (
+                    <TouchableOpacity
+                      key={classItem.SinifKodu}
+                      style={[
+                        styles.dropdownItem,
+                        {
+                          backgroundColor:
+                            selectedClass === classItem.SinifAdi
+                              ? theme.accent + "20"
+                              : "transparent",
+                        },
+                      ]}
+                      onPress={() => handleClassSelect(classItem.SinifAdi)}
+                    >
+                      <Text
+                        style={[
+                          styles.dropdownItemText,
+                          {
+                            color:
+                              selectedClass === classItem.SinifAdi
+                                ? theme.accent
+                                : theme.text,
+                          },
+                        ]}
+                      >
+                        {classItem.SinifAdi}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+            )}
           </View>
 
           {/* Kayıt Türü Bilgisi */}
@@ -593,6 +665,49 @@ const styles = StyleSheet.create({
   submitButtonText: {
     fontSize: 18,
     fontWeight: "bold",
+  },
+  dropdownButton: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    minHeight: 48,
+  },
+  dropdownText: {
+    flex: 1,
+    fontSize: 16,
+  },
+  dropdownArrow: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginLeft: 8,
+  },
+  dropdownList: {
+    borderWidth: 1,
+    borderRadius: 8,
+    marginTop: 8,
+    maxHeight: 150,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+  },
+  dropdownScroll: {
+    borderRadius: 8,
+  },
+  dropdownItem: {
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+  },
+  dropdownItemText: {
+    fontSize: 16,
+    fontWeight: "500",
   },
 });
 

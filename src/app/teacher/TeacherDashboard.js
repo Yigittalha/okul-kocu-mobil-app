@@ -301,7 +301,7 @@ const TeacherDashboard = () => {
               styles.actionCard,
               { backgroundColor: theme.card, borderColor: theme.accent },
             ]}
-            onPress={() => navigation.navigate("AttendanceStart")}
+            onPress={() => navigation.navigate("TeacherSchedule")}
           >
             <Text style={styles.actionIcon}>✅</Text>
             <Text style={[styles.actionTitle, { color: theme.text }]}>

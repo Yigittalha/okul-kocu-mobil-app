@@ -2,17 +2,18 @@ import React, { useState, useContext } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
-  ScrollView,
   Image,
+  ScrollView,
+  StyleSheet,
+  Platform,
 } from "react-native";
-import { schools } from "../../constants/schools";
-import { darkBlue, yellow } from "../../constants/colors";
-import { useNavigation } from "@react-navigation/native";
-import { SessionContext } from "../../state/session";
 import { useTheme } from "../../state/theme";
+import { SessionContext } from "../../state/session";
+import { useNavigation } from "@react-navigation/native";
 import ThemeToggle from "../../ui/theme/ThemeToggle";
+import { schools } from "../../constants/schools";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const SchoolSelect = () => {
   const [selected, setSelected] = useState("");
@@ -35,7 +36,7 @@ const SchoolSelect = () => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
       <ThemeToggle style={styles.themeToggle} />
 
       <View style={styles.logoContainer}>
@@ -116,7 +117,7 @@ const SchoolSelect = () => {
           </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -134,7 +135,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingTop: 60,
+    paddingTop: Platform.OS === 'ios' ? 40 : 60, // iPhone için daha az padding
   },
   logo: {
     width: 120,
@@ -155,7 +156,8 @@ const styles = StyleSheet.create({
   selectionContainer: {
     flex: 1.2,
     paddingHorizontal: 30,
-    paddingTop: 20,
+    paddingTop: Platform.OS === 'ios' ? 10 : 20, // iPhone için daha az padding
+    paddingBottom: Platform.OS === 'ios' ? 20 : 30, // iPhone için alt padding
   },
   title: {
     fontSize: 22,

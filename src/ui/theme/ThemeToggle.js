@@ -72,15 +72,7 @@ const ThemeToggle = ({ size = 40 }) => {
   const scale = Animated.multiply(knobScale, 1);
 
   return (
-    <Pressable
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-      onPress={toggleTheme}
-      accessibilityRole="switch"
-      accessibilityState={{ checked: isDark }}
-      accessibilityLabel={isDark ? "Aydınlık moda geç" : "Karanlık moda geç"}
-      style={styles.pressable}
-    >
+    <View style={styles.pressable}>
       <Animated.View
         style={[
           styles.track,
@@ -92,7 +84,7 @@ const ThemeToggle = ({ size = 40 }) => {
           },
         ]}
       >
-        {/* Knob ve içindeki güneş/ay ikonu */}
+        {/* Knob ve içindeki güneş/ay ikonu - tıklama olayı knob container'ında */}
         <Animated.View
           style={[
             styles.knob,
@@ -105,44 +97,54 @@ const ThemeToggle = ({ size = 40 }) => {
             },
           ]}
         >
-          {/* Aydınlık mod ikonu (güneş) */}
-          <Animated.View
-            style={[
-              styles.iconContainer,
-              {
-                opacity: switchAnim.interpolate({
-                  inputRange: [0, 0.5, 1],
-                  outputRange: [1, 0, 0],
-                }),
-              },
-            ]}
+          <Pressable
+            onPressIn={handlePressIn}
+            onPressOut={handlePressOut}
+            onPress={toggleTheme}
+            accessibilityRole="switch"
+            accessibilityState={{ checked: isDark }}
+            accessibilityLabel={isDark ? "Aydınlık moda geç" : "Karanlık moda geç"}
+            style={styles.knobPressable}
           >
-            <Feather name="sun" size={knobSize * 0.6} color="#F59E0B" />
-          </Animated.View>
+            {/* Aydınlık mod ikonu (güneş) */}
+            <Animated.View
+              style={[
+                styles.iconContainer,
+                {
+                  opacity: switchAnim.interpolate({
+                    inputRange: [0, 0.5, 1],
+                    outputRange: [1, 0, 0],
+                  }),
+                },
+              ]}
+            >
+              <Feather name="sun" size={knobSize * 0.6} color="#F59E0B" />
+            </Animated.View>
 
-          {/* Karanlık mod ikonu (ay) */}
-          <Animated.View
-            style={[
-              styles.iconContainer,
-              {
-                opacity: switchAnim.interpolate({
-                  inputRange: [0, 0.5, 1],
-                  outputRange: [0, 0, 1],
-                }),
-              },
-            ]}
-          >
-            <Feather name="moon" size={knobSize * 0.55} color="#E6E8EB" />
-          </Animated.View>
+            {/* Karanlık mod ikonu (ay) */}
+            <Animated.View
+              style={[
+                styles.iconContainer,
+                {
+                  opacity: switchAnim.interpolate({
+                    inputRange: [0, 0.5, 1],
+                    outputRange: [0, 0, 1],
+                  }),
+                },
+              ]}
+            >
+              <Feather name="moon" size={knobSize * 0.55} color="#E6E8EB" />
+            </Animated.View>
+          </Pressable>
         </Animated.View>
       </Animated.View>
-    </Pressable>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   pressable: {
-    padding: 6, // Daha geniş bir dokunma alanı
+
     justifyContent: "center",
     alignItems: "center",
   },
@@ -172,6 +174,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "100%",
     height: "100%",
+  },
+  knobPressable: {
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

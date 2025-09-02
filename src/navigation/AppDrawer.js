@@ -4,6 +4,7 @@ import { SessionContext } from "../state/session";
 
 // Import dashboard screens
 import AdminDashboard from "../app/admin/AdminDashboard";
+// Import TeacherDashboard screen
 import TeacherDashboard from "../app/teacher/TeacherDashboard";
 import ParentDashboard from "../app/parent/ParentDashboard";
 // Import TeachersList and StudentsList screens
@@ -11,8 +12,8 @@ import TeachersList from "../app/common/TeachersList";
 import StudentsList from "../app/common/StudentsList";
 // Import TeacherSchedule screen
 import TeacherSchedule from "../app/teacher/TeacherSchedule";
-// Import AttendanceStart screen
-import AttendanceStart from "../app/teacher/AttendanceStart";
+// Import Attendance screen
+import Attendance from "../app/teacher/attendance";
 // Import AttendanceResults screen
 import AttendanceResults from "../app/teacher/AttendanceResults";
 // Import HomeworkAssignment screen
@@ -29,7 +30,9 @@ import StudentHomeworkDetail from "../app/parent/StudentHomeworkDetail";
 import StudentAbsences from "../app/parent/StudentAbsences";
 // Import ExamAdd screen
 import ExamAdd from "../app/teacher/ExamAdd";
+// Import ExamsList screen
 import ExamsList from "../app/teacher/ExamsList";
+// Import ExamDetail screen
 import ExamDetail from "../app/teacher/ExamDetail";
 
 const Stack = createNativeStackNavigator();
@@ -49,20 +52,20 @@ export default function AppDrawer() {
           <Stack.Screen name="AdminDashboard" component={AdminDashboard} />
           <Stack.Screen name="TeachersList" component={TeachersList} />
           <Stack.Screen name="StudentsList" component={StudentsList} />
-          <Stack.Screen name="AttendanceStart" component={AttendanceStart} />
         </>
       )}
       {role === "teacher" && (
         <>
           <Stack.Screen name="TeacherDashboard" component={TeacherDashboard} />
           <Stack.Screen name="TeacherSchedule" component={TeacherSchedule} />
-          <Stack.Screen name="TeachersList" component={TeachersList} />
-          <Stack.Screen name="StudentsList" component={StudentsList} />
-          <Stack.Screen name="AttendanceStart" component={AttendanceStart} />
+          <Stack.Screen name="Attendance" component={Attendance} />
+          <Stack.Screen name="AttendanceResults" component={AttendanceResults} />
           <Stack.Screen
-            name="AttendanceResults"
-            component={AttendanceResults}
+            name="TeachersList"
+            component={TeachersList}
           />
+          <Stack.Screen name="StudentsList" component={StudentsList} />
+
           <Stack.Screen
             name="HomeworkAssignment"
             component={HomeworkAssignment}

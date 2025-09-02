@@ -28,7 +28,7 @@ export const MENU_SCHEMA = {
       title: "İşlemler",
       icon: "📋",
       items: [
-        { key: "yoklama", label: "Yoklama", route: "AttendanceStart" },
+        { key: "yoklama", label: "Yoklama", route: "TeacherSchedule" },
         { key: "raporlar", label: "Raporlar", route: "AdminDashboard" },
       ],
     },
@@ -68,7 +68,7 @@ export const MENU_SCHEMA = {
       title: "İşlemler",
       icon: "📋",
       items: [
-        { key: "yoklama", label: "Yoklama", route: "AttendanceStart" },
+        { key: "yoklama", label: "Yoklama", route: "TeacherSchedule" },
         {
           key: "odev-ver",
           label: "Verdiğim Ödevler",
